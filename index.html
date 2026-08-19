@@ -21,12 +21,8 @@ header{
 }
 header h1{margin:0;font-size:34px}
 header p{margin:8px 0 0;color:#ccc;font-size:20px}
+main{max-width:700px;margin:auto;padding:18px}
 
-main{
-  max-width:700px;
-  margin:auto;
-  padding:18px;
-}
 .card{
   background:white;
   border-radius:20px;
@@ -36,12 +32,7 @@ main{
 }
 h2{margin-top:0}
 .route{color:#666;font-size:18px}
-
-.date{
-  font-size:20px;
-  font-weight:bold;
-  margin:20px 0 10px;
-}
+.date{font-size:20px;font-weight:bold;margin:20px 0 10px}
 
 .trip{
   display:flex;
@@ -52,11 +43,7 @@ h2{margin-top:0}
   border-top:1px solid #eee;
   font-size:20px;
 }
-.buttons{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
+.buttons{display:flex;align-items:center;gap:10px}
 button{
   border:0;
   border-radius:14px;
@@ -72,17 +59,14 @@ button{
   font-size:24px;
   font-weight:bold;
 }
-
+.reason{
+  font-size:14px;
+  color:#666;
+  margin-top:4px;
+}
 .summary{text-align:center}
-.amount{
-  font-size:36px;
-  font-weight:bold;
-  margin-top:10px;
-}
-.month{
-  font-size:18px;
-  line-height:1.7;
-}
+.amount{font-size:36px;font-weight:bold;margin-top:10px}
+.month{font-size:16px;line-height:1.8}
 </style>
 </head>
 
@@ -102,7 +86,10 @@ button{
 <div class="date" id="today"></div>
 
 <div class="trip">
-<span>🌅 Hinfahrt</span>
+<div>
+🌅 Hinfahrt
+<div class="reason" id="hinReason"></div>
+</div>
 <div class="buttons">
 <button class="yes" onclick="setTrip('hin','✓')">✓</button>
 <button class="no" onclick="setTrip('hin','✕')">×</button>
@@ -111,7 +98,10 @@ button{
 </div>
 
 <div class="trip">
-<span>🏠 Retour</span>
+<div>
+🏠 Retour
+<div class="reason" id="retourReason"></div>
+</div>
 <div class="buttons">
 <button class="yes" onclick="setTrip('retour','✓')">✓</button>
 <button class="no" onclick="setTrip('retour','✕')">×</button>
@@ -136,13 +126,12 @@ button{
 </main>
 
 <script>
-const FULL_DAY = 150;
 const HALF_DAY = 75;
 
 const now = new Date();
 const dateKey =
-  now.getFullYear() + "-" +
-  String(now.getMonth()+1).padStart(2,"0") + "-" +
+  now.getFullYear()+"-"+
+  String(now.getMonth()+1).padStart(2,"0")+"-"+
   String(now.getDate()).padStart(2,"0");
 
 document.getElementById("today").innerText =
@@ -165,54 +154,121 @@ function setTrip(type,value){
   const data=getData();
 
   if(!data[dateKey]){
-    data[dateKey]={hin:"–",retour:"–"};
+    data[dateKey]={
+      hin:"–",
+      retour:"–",
+      hinReason:"",
+      retourReason:""
+    };
   }
 
-  data[dateKey][type]=value;
+  if(value==="✓"){
+    data[dateKey][type]="✓";
+    data[dateKey][type+"Reason"]="";
+  } else {
+
+    const answer=prompt(
+      "Grund für die nicht gefahrene Strecke:\n\n"+
+      "1 = Entschuldigt (CHF 0.–)\n"+
+      "2 = Nicht entschuldigt (CHF 75.–)"
+    );
+
+    if(answer===null) return;
+
+    if(answer==="1"){
+      data[dateKey][type]="✕";
+      data[dateKey][type+"Reason"]="Entschuldigt";
+    }
+    else if(answer==="2"){
+      data[dateKey][type]="✕";
+      data[dateKey][type+"Reason"]="Nicht entschuldigt";
+    }
+    else{
+      alert("Bitte 1 oder 2 eingeben.");
+      return;
+    }
+  }
+
   saveData(data);
   render();
 }
 
+function tripPrice(status,reason){
+  if(status==="✓") return HALF_DAY;
+  if(status==="✕" && reason==="Nicht entschuldigt") return HALF_DAY;
+  return 0;
+}
+
 function calculateDay(day){
-  let total=0;
-  if(day.hin==="✓") total+=HALF_DAY;
-  if(day.retour==="✓") total+=HALF_DAY;
-  return total;
+  return (
+    tripPrice(day.hin,day.hinReason) +
+    tripPrice(day.retour,day.retourReason)
+  );
 }
 
 function render(){
   const data=getData();
-  const today=data[dateKey] || {hin:"–",retour:"–"};
+
+  const today=data[dateKey] || {
+    hin:"–",
+    retour:"–",
+    hinReason:"",
+    retourReason:""
+  };
 
   document.getElementById("hin").innerText=today.hin;
   document.getElementById("retour").innerText=today.retour;
 
+  document.getElementById("hinReason").innerText=
+    today.hinReason || "";
+
+  document.getElementById("retourReason").innerText=
+    today.retourReason || "";
+
   const todayTotal=calculateDay(today);
-  document.getElementById("amount").innerText="CHF "+todayTotal+".–";
+
+  document.getElementById("amount").innerText=
+    "CHF "+todayTotal+".–";
 
   if(todayTotal===150){
-    document.getElementById("todayPrice").innerText="Kompletter Schultag";
-  }else if(todayTotal===75){
-    document.getElementById("todayPrice").innerText="Halber Schultag";
-  }else{
-    document.getElementById("todayPrice").innerText="Noch keine verrechenbare Fahrt";
+    document.getElementById("todayPrice").innerText=
+      "Total für heute";
+  }
+  else if(todayTotal===75){
+    document.getElementById("todayPrice").innerText=
+      "CHF 75.– verrechenbar";
+  }
+  else{
+    document.getElementById("todayPrice").innerText=
+      "Noch keine verrechenbare Fahrt";
   }
 
   let html="";
   let total=0;
 
   Object.keys(data).sort().forEach(date=>{
+    if(!date.startsWith(dateKey.substring(0,7))) return;
+
     const d=data[date];
 
-    if(date.startsWith(dateKey.substring(0,7))){
-      const price=calculateDay(d);
-      total+=price;
+    if(d.hinReason===undefined) d.hinReason="";
+    if(d.retourReason===undefined) d.retourReason="";
 
-      html +=
-        "<div><strong>"+date+"</strong> &nbsp; " +
-        "Hin "+d.hin+" &nbsp; Retour "+d.retour+
-        " — CHF "+price+".–</div>";
-    }
+    const price=calculateDay(d);
+    total+=price;
+
+    const formattedDate=
+      date.substring(8,10)+"."+
+      date.substring(5,7)+"."+
+      date.substring(0,4);
+
+    html +=
+      "<div><strong>"+formattedDate+"</strong><br>"+
+      "Hin "+d.hin+
+      (d.hinReason ? " ("+d.hinReason+")" : "")+
+      " · Retour "+d.retour+
+      (d.retourReason ? " ("+d.retourReason+")" : "")+
+      " — <strong>CHF "+price+".–</strong></div>";
   });
 
   if(!html){
