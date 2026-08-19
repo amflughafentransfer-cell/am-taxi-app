@@ -7,21 +7,37 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
   font-family:Arial,sans-serif;
   background:#f3f5f7;
   margin:0;
   color:#222;
 }
+
 header{
   background:#111;
   color:white;
-  padding:24px 15px;
+  padding:28px 15px;
   text-align:center;
 }
-header h1{margin:0;font-size:34px}
-header p{margin:8px 0 0;color:#ccc;font-size:20px}
-main{max-width:700px;margin:auto;padding:18px}
+
+header h1{
+  margin:0;
+  font-size:34px;
+}
+
+header p{
+  margin:10px 0 0;
+  color:#ccc;
+  font-size:21px;
+}
+
+main{
+  max-width:700px;
+  margin:auto;
+  padding:18px;
+}
 
 .card{
   background:white;
@@ -30,109 +46,227 @@ main{max-width:700px;margin:auto;padding:18px}
   margin-bottom:18px;
   box-shadow:0 4px 14px rgba(0,0,0,.08);
 }
-h2{margin-top:0}
-.route{color:#666;font-size:18px}
-.date{font-size:20px;font-weight:bold;margin:20px 0 10px}
+
+h2{
+  margin-top:0;
+}
+
+.name{
+  font-size:26px;
+  font-weight:bold;
+}
+
+.route{
+  color:#666;
+  font-size:18px;
+  margin:22px 0;
+}
+
+.date{
+  font-size:20px;
+  font-weight:bold;
+  padding-bottom:15px;
+  border-bottom:1px solid #ddd;
+}
 
 .trip{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:grid;
+  grid-template-columns:1fr 55px 55px 35px;
   gap:10px;
+  align-items:center;
   padding:18px 0;
-  border-top:1px solid #eee;
-  font-size:20px;
+  border-bottom:1px solid #eee;
 }
-.buttons{display:flex;align-items:center;gap:10px}
+
+.trip:last-child{
+  border-bottom:none;
+}
+
+.trip-title{
+  font-size:22px;
+}
+
+.reason{
+  display:block;
+  color:#666;
+  font-size:14px;
+  margin-top:4px;
+}
+
 button{
   border:0;
   border-radius:14px;
-  width:58px;
-  height:58px;
+  height:55px;
   font-size:25px;
+  cursor:pointer;
 }
-.yes{background:#e1f3e5}
-.no{background:#f9dddd}
+
+.yes{
+  background:#e0f3e5;
+  color:#168b45;
+}
+
+.no{
+  background:#f8dddd;
+  color:#d73535;
+}
+
 .status{
-  width:25px;
+  font-size:27px;
   text-align:center;
-  font-size:24px;
+}
+
+.today{
+  text-align:center;
+}
+
+.today h2{
+  font-size:27px;
+}
+
+.todayText{
+  font-size:17px;
+}
+
+.amount{
+  font-size:38px;
   font-weight:bold;
+  margin-top:16px;
 }
-.reason{
-  font-size:14px;
+
+.overview-title{
+  font-size:27px;
+  margin-bottom:22px;
+}
+
+.day-entry{
+  padding:13px 0;
+  border-bottom:1px solid #ddd;
+  line-height:1.7;
+}
+
+.day-date{
+  font-weight:bold;
+  font-size:17px;
+}
+
+.month-total{
+  font-weight:bold;
+  font-size:19px;
+  margin-top:15px;
+  padding-top:10px;
+  border-top:2px solid #333;
+}
+
+.note{
   color:#666;
-  margin-top:4px;
+  font-size:14px;
 }
-.summary{text-align:center}
-.amount{font-size:36px;font-weight:bold;margin-top:10px}
-.month{font-size:16px;line-height:1.8}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>A&M Taxi Services</h1>
-<p>Schultransport</p>
+  <h1>A&M Taxi Services</h1>
+  <p>Schultransport</p>
 </header>
 
 <main>
 
 <div class="card">
-<h2>Jon</h2>
-<p class="route">Mettmenstetten → ISR+ Hedingen</p>
 
-<div class="date" id="today"></div>
+  <div class="name">Jon</div>
 
-<div class="trip">
-<div>
-🌅 Hinfahrt
-<div class="reason" id="hinReason"></div>
-</div>
-<div class="buttons">
-<button class="yes" onclick="setTrip('hin','✓')">✓</button>
-<button class="no" onclick="setTrip('hin','✕')">×</button>
-<span id="hin" class="status">–</span>
-</div>
+  <div class="route">
+    Mettmenstetten → ISR+ Hedingen
+  </div>
+
+  <div class="date" id="today"></div>
+
+  <div class="trip">
+
+    <div class="trip-title">
+      🌅 Hinfahrt
+      <span class="reason" id="hinReason"></span>
+    </div>
+
+    <button class="yes"
+      onclick="setTrip('hin','✓')">✓</button>
+
+    <button class="no"
+      onclick="setTrip('hin','✕')">×</button>
+
+    <div class="status" id="hinStatus">–</div>
+
+  </div>
+
+  <div class="trip">
+
+    <div class="trip-title">
+      🏠 Retour
+      <span class="reason" id="retourReason"></span>
+    </div>
+
+    <button class="yes"
+      onclick="setTrip('retour','✓')">✓</button>
+
+    <button class="no"
+      onclick="setTrip('retour','✕')">×</button>
+
+    <div class="status" id="retourStatus">–</div>
+
+  </div>
+
 </div>
 
-<div class="trip">
-<div>
-🏠 Retour
-<div class="reason" id="retourReason"></div>
-</div>
-<div class="buttons">
-<button class="yes" onclick="setTrip('retour','✓')">✓</button>
-<button class="no" onclick="setTrip('retour','✕')">×</button>
-<span id="retour" class="status">–</span>
-</div>
-</div>
+
+<div class="card today">
+
+  <h2>Heute</h2>
+
+  <div class="todayText" id="todayText">
+    Noch keine verrechenbare Fahrt
+  </div>
+
+  <div class="amount" id="todayAmount">
+    CHF 0.–
+  </div>
+
 </div>
 
-<div class="card summary">
-<h2>Heute</h2>
-<p id="todayPrice">Noch keine Fahrt erfasst</p>
-<div class="amount" id="amount">CHF 0.–</div>
-</div>
 
 <div class="card">
-<h2>Monatsübersicht</h2>
-<div id="monthList" class="month"></div>
-<hr>
-<strong id="monthTotal">Total: CHF 0.–</strong>
+
+  <h2 class="overview-title">
+    Monatsübersicht
+  </h2>
+
+  <div id="monthList">
+    Noch keine Fahrten in diesem Monat.
+  </div>
+
+  <div class="month-total" id="monthTotal">
+    Total: CHF 0.–
+  </div>
+
 </div>
 
 </main>
 
+
 <script>
-const HALF_DAY = 75;
+
+const PRICE_HALF = 75;
+const PRICE_FULL = 150;
 
 const now = new Date();
+
 const dateKey =
   now.getFullYear()+"-"+
   String(now.getMonth()+1).padStart(2,"0")+"-"+
   String(now.getDate()).padStart(2,"0");
+
 
 document.getElementById("today").innerText =
   now.toLocaleDateString("de-CH",{
@@ -142,30 +276,55 @@ document.getElementById("today").innerText =
     year:"numeric"
   });
 
+
 function getData(){
-  return JSON.parse(localStorage.getItem("amSchoolTrips") || "{}");
+
+  try{
+    return JSON.parse(
+      localStorage.getItem("amSchoolTrips")
+    ) || {};
+  }
+  catch(e){
+    return {};
+  }
+
 }
+
 
 function saveData(data){
-  localStorage.setItem("amSchoolTrips",JSON.stringify(data));
+
+  localStorage.setItem(
+    "amSchoolTrips",
+    JSON.stringify(data)
+  );
+
 }
 
+
 function setTrip(type,value){
+
   const data=getData();
 
   if(!data[dateKey]){
+
     data[dateKey]={
       hin:"–",
       retour:"–",
       hinReason:"",
       retourReason:""
     };
+
   }
 
+
   if(value==="✓"){
+
     data[dateKey][type]="✓";
     data[dateKey][type+"Reason"]="";
-  } else {
+
+  }
+
+  else{
 
     const answer=prompt(
       "Grund für die nicht gefahrene Strecke:\n\n"+
@@ -173,114 +332,223 @@ function setTrip(type,value){
       "2 = Nicht entschuldigt (CHF 75.–)"
     );
 
-    if(answer===null) return;
 
-    if(answer==="1"){
-      data[dateKey][type]="✕";
-      data[dateKey][type+"Reason"]="Entschuldigt";
-    }
-    else if(answer==="2"){
-      data[dateKey][type]="✕";
-      data[dateKey][type+"Reason"]="Nicht entschuldigt";
-    }
-    else{
-      alert("Bitte 1 oder 2 eingeben.");
+    if(answer===null){
       return;
     }
+
+
+    if(answer==="1"){
+
+      data[dateKey][type]="✕";
+      data[dateKey][type+"Reason"]="Entschuldigt";
+
+    }
+
+    else if(answer==="2"){
+
+      data[dateKey][type]="✕";
+      data[dateKey][type+"Reason"]="Nicht entschuldigt";
+
+    }
+
+    else{
+
+      alert("Bitte nur 1 oder 2 eingeben.");
+      return;
+
+    }
+
   }
+
 
   saveData(data);
   render();
+
 }
+
 
 function tripPrice(status,reason){
-  if(status==="✓") return HALF_DAY;
-  if(status==="✕" && reason==="Nicht entschuldigt") return HALF_DAY;
+
+  if(status==="✓"){
+    return PRICE_HALF;
+  }
+
+  if(
+    status==="✕" &&
+    reason==="Nicht entschuldigt"
+  ){
+    return PRICE_HALF;
+  }
+
   return 0;
+
 }
 
-function calculateDay(day){
+
+function calculateDay(d){
+
+  if(!d) return 0;
+
   return (
-    tripPrice(day.hin,day.hinReason) +
-    tripPrice(day.retour,day.retourReason)
+    tripPrice(d.hin,d.hinReason) +
+    tripPrice(d.retour,d.retourReason)
   );
+
 }
+
+
+function statusText(status,reason){
+
+  if(status==="✓"){
+    return "✓";
+  }
+
+  if(status==="✕"){
+
+    if(reason==="Entschuldigt"){
+      return "✕ (Entschuldigt)";
+    }
+
+    if(reason==="Nicht entschuldigt"){
+      return "✕ (Nicht entschuldigt)";
+    }
+
+    return "✕";
+
+  }
+
+  return "–";
+
+}
+
+
+function formatDate(date){
+
+  return (
+    date.substring(8,10)+"."+
+    date.substring(5,7)+"."+
+    date.substring(0,4)
+  );
+
+}
+
 
 function render(){
+
   const data=getData();
 
-  const today=data[dateKey] || {
-    hin:"–",
-    retour:"–",
-    hinReason:"",
-    retourReason:""
-  };
+  const todayData =
+    data[dateKey] || {
+      hin:"–",
+      retour:"–",
+      hinReason:"",
+      retourReason:""
+    };
 
-  document.getElementById("hin").innerText=today.hin;
-  document.getElementById("retour").innerText=today.retour;
 
-  document.getElementById("hinReason").innerText=
-    today.hinReason || "";
+  document.getElementById("hinStatus").innerText =
+    todayData.hin;
 
-  document.getElementById("retourReason").innerText=
-    today.retourReason || "";
+  document.getElementById("retourStatus").innerText =
+    todayData.retour;
 
-  const todayTotal=calculateDay(today);
 
-  document.getElementById("amount").innerText=
-    "CHF "+todayTotal+".–";
+  document.getElementById("hinReason").innerText =
+    todayData.hinReason || "";
 
-  if(todayTotal===150){
-    document.getElementById("todayPrice").innerText=
-      "Total für heute";
+  document.getElementById("retourReason").innerText =
+    todayData.retourReason || "";
+
+
+  const todayPrice =
+    calculateDay(todayData);
+
+
+  document.getElementById("todayAmount").innerText =
+    "CHF "+todayPrice+".–";
+
+
+  let text="Noch keine verrechenbare Fahrt";
+
+
+  if(todayPrice===150){
+
+    text="Hin & Retour verrechenbar";
+
   }
-  else if(todayTotal===75){
-    document.getElementById("todayPrice").innerText=
-      "CHF 75.– verrechenbar";
+
+  else if(todayPrice===75){
+
+    text="CHF 75.– verrechenbar";
+
   }
-  else{
-    document.getElementById("todayPrice").innerText=
-      "Noch keine verrechenbare Fahrt";
-  }
+
+
+  document.getElementById("todayText").innerText=text;
+
+
 
   let html="";
   let total=0;
 
-  Object.keys(data).sort().forEach(date=>{
-    if(!date.startsWith(dateKey.substring(0,7))) return;
+  const currentMonth =
+    dateKey.substring(0,7);
 
-    const d=data[date];
 
-    if(d.hinReason===undefined) d.hinReason="";
-    if(d.retourReason===undefined) d.retourReason="";
+  Object.keys(data)
+    .sort()
+    .forEach(date=>{
 
-    const price=calculateDay(d);
-    total+=price;
+      if(!date.startsWith(currentMonth)){
+        return;
+      }
 
-    const formattedDate=
-      date.substring(8,10)+"."+
-      date.substring(5,7)+"."+
-      date.substring(0,4);
+      const d=data[date];
 
-    html +=
-      "<div><strong>"+formattedDate+"</strong><br>"+
-      "Hin "+d.hin+
-      (d.hinReason ? " ("+d.hinReason+")" : "")+
-      " · Retour "+d.retour+
-      (d.retourReason ? " ("+d.retourReason+")" : "")+
-      " — <strong>CHF "+price+".–</strong></div>";
-  });
+      const price=calculateDay(d);
+
+      total+=price;
+
+
+      html +=
+        '<div class="day-entry">'+
+
+        '<div class="day-date">'+
+        formatDate(date)+
+        '</div>'+
+
+        '<div>'+
+        'Hin '+statusText(d.hin,d.hinReason)+
+        ' · Retour '+statusText(d.retour,d.retourReason)+
+        ' — <strong>CHF '+price+'.–</strong>'+
+        '</div>'+
+
+        '</div>';
+
+    });
+
 
   if(!html){
-    html="Noch keine Fahrten in diesem Monat.";
+
+    html=
+      '<div class="note">'+
+      'Noch keine Fahrten in diesem Monat.'+
+      '</div>';
+
   }
 
+
   document.getElementById("monthList").innerHTML=html;
+
   document.getElementById("monthTotal").innerText=
     "Total: CHF "+total+".–";
+
 }
 
+
 render();
+
 </script>
 
 </body>
