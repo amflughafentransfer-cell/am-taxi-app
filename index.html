@@ -6,6 +6,7 @@
 <title>A&M Schultransport</title>
 
 <style>
+*{box-sizing:border-box}
 body{
   font-family:Arial,sans-serif;
   background:#f3f5f7;
@@ -15,11 +16,11 @@ body{
 header{
   background:#111;
   color:white;
-  padding:22px;
+  padding:24px 15px;
   text-align:center;
 }
-header h1{margin:0;}
-header p{margin:6px 0 0;color:#ccc;}
+header h1{margin:0;font-size:34px}
+header p{margin:8px 0 0;color:#ccc;font-size:20px}
 
 main{
   max-width:700px;
@@ -28,48 +29,59 @@ main{
 }
 .card{
   background:white;
-  border-radius:16px;
-  padding:18px;
-  margin-bottom:16px;
-  box-shadow:0 2px 10px #ddd;
+  border-radius:20px;
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 4px 14px rgba(0,0,0,.08);
 }
-h2{margin-top:0;}
+h2{margin-top:0}
+.route{color:#666;font-size:18px}
 
-.route{
-  color:#666;
-  margin-bottom:15px;
+.date{
+  font-size:20px;
+  font-weight:bold;
+  margin:20px 0 10px;
 }
 
 .trip{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  padding:14px 0;
+  justify-content:space-between;
+  gap:10px;
+  padding:18px 0;
   border-top:1px solid #eee;
+  font-size:20px;
 }
-
-.buttons button{
+.buttons{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+button{
   border:0;
-  border-radius:10px;
-  padding:11px 15px;
-  margin-left:5px;
-  font-size:18px;
-  cursor:pointer;
+  border-radius:14px;
+  width:58px;
+  height:58px;
+  font-size:25px;
 }
-.yes{background:#dff5e4;}
-.no{background:#ffe0e0;}
-
+.yes{background:#e1f3e5}
+.no{background:#f9dddd}
 .status{
+  width:25px;
+  text-align:center;
+  font-size:24px;
   font-weight:bold;
-  margin-left:8px;
 }
 
-.summary{
-  text-align:center;
-}
+.summary{text-align:center}
 .amount{
-  font-size:30px;
+  font-size:36px;
   font-weight:bold;
+  margin-top:10px;
+}
+.month{
+  font-size:18px;
+  line-height:1.7;
 }
 </style>
 </head>
@@ -85,13 +97,15 @@ h2{margin-top:0;}
 
 <div class="card">
 <h2>Jon</h2>
-<div class="route">Mettmenstetten → ISR+ Hedingen</div>
+<p class="route">Mettmenstetten → ISR+ Hedingen</p>
+
+<div class="date" id="today"></div>
 
 <div class="trip">
 <span>🌅 Hinfahrt</span>
 <div class="buttons">
 <button class="yes" onclick="setTrip('hin','✓')">✓</button>
-<button class="no" onclick="setTrip('hin','✕')">✕</button>
+<button class="no" onclick="setTrip('hin','✕')">×</button>
 <span id="hin" class="status">–</span>
 </div>
 </div>
@@ -100,7 +114,7 @@ h2{margin-top:0;}
 <span>🏠 Retour</span>
 <div class="buttons">
 <button class="yes" onclick="setTrip('retour','✓')">✓</button>
-<button class="no" onclick="setTrip('retour','✕')">✕</button>
+<button class="no" onclick="setTrip('retour','✕')">×</button>
 <span id="retour" class="status">–</span>
 </div>
 </div>
@@ -108,25 +122,109 @@ h2{margin-top:0;}
 
 <div class="card summary">
 <h2>Heute</h2>
-<p>Preis kompletter Schultag</p>
-<div class="amount">CHF 150.–</div>
+<p id="todayPrice">Noch keine Fahrt erfasst</p>
+<div class="amount" id="amount">CHF 0.–</div>
+</div>
+
+<div class="card">
+<h2>Monatsübersicht</h2>
+<div id="monthList" class="month"></div>
+<hr>
+<strong id="monthTotal">Total: CHF 0.–</strong>
 </div>
 
 </main>
 
 <script>
+const FULL_DAY = 150;
+const HALF_DAY = 75;
+
+const now = new Date();
+const dateKey =
+  now.getFullYear() + "-" +
+  String(now.getMonth()+1).padStart(2,"0") + "-" +
+  String(now.getDate()).padStart(2,"0");
+
+document.getElementById("today").innerText =
+  now.toLocaleDateString("de-CH",{
+    weekday:"long",
+    day:"2-digit",
+    month:"2-digit",
+    year:"numeric"
+  });
+
+function getData(){
+  return JSON.parse(localStorage.getItem("amSchoolTrips") || "{}");
+}
+
+function saveData(data){
+  localStorage.setItem("amSchoolTrips",JSON.stringify(data));
+}
+
 function setTrip(type,value){
- document.getElementById(type).innerText=value;
- localStorage.setItem(type,value);
+  const data=getData();
+
+  if(!data[dateKey]){
+    data[dateKey]={hin:"–",retour:"–"};
+  }
+
+  data[dateKey][type]=value;
+  saveData(data);
+  render();
 }
 
-window.onload=function(){
- document.getElementById("hin").innerText=
- localStorage.getItem("hin") || "–";
-
- document.getElementById("retour").innerText=
- localStorage.getItem("retour") || "–";
+function calculateDay(day){
+  let total=0;
+  if(day.hin==="✓") total+=HALF_DAY;
+  if(day.retour==="✓") total+=HALF_DAY;
+  return total;
 }
+
+function render(){
+  const data=getData();
+  const today=data[dateKey] || {hin:"–",retour:"–"};
+
+  document.getElementById("hin").innerText=today.hin;
+  document.getElementById("retour").innerText=today.retour;
+
+  const todayTotal=calculateDay(today);
+  document.getElementById("amount").innerText="CHF "+todayTotal+".–";
+
+  if(todayTotal===150){
+    document.getElementById("todayPrice").innerText="Kompletter Schultag";
+  }else if(todayTotal===75){
+    document.getElementById("todayPrice").innerText="Halber Schultag";
+  }else{
+    document.getElementById("todayPrice").innerText="Noch keine verrechenbare Fahrt";
+  }
+
+  let html="";
+  let total=0;
+
+  Object.keys(data).sort().forEach(date=>{
+    const d=data[date];
+
+    if(date.startsWith(dateKey.substring(0,7))){
+      const price=calculateDay(d);
+      total+=price;
+
+      html +=
+        "<div><strong>"+date+"</strong> &nbsp; " +
+        "Hin "+d.hin+" &nbsp; Retour "+d.retour+
+        " — CHF "+price+".–</div>";
+    }
+  });
+
+  if(!html){
+    html="Noch keine Fahrten in diesem Monat.";
+  }
+
+  document.getElementById("monthList").innerHTML=html;
+  document.getElementById("monthTotal").innerText=
+    "Total: CHF "+total+".–";
+}
+
+render();
 </script>
 
 </body>
