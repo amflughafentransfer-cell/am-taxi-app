@@ -2,554 +2,772 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A&M Schultransport</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>A&M Taxi Services</title>
 <style>
-*{box-sizing:border-box}
-
-body{
-  font-family:Arial,sans-serif;
-  background:#f3f5f7;
-  margin:0;
-  color:#222;
-}
-
-header{
-  background:#111;
-  color:white;
-  padding:28px 15px;
-  text-align:center;
-}
-
-header h1{
-  margin:0;
-  font-size:34px;
-}
-
-header p{
-  margin:10px 0 0;
-  color:#ccc;
-  font-size:21px;
-}
-
-main{
-  max-width:700px;
-  margin:auto;
-  padding:18px;
-}
-
-.card{
-  background:white;
-  border-radius:20px;
-  padding:22px;
-  margin-bottom:18px;
-  box-shadow:0 4px 14px rgba(0,0,0,.08);
-}
-
-h2{
-  margin-top:0;
-}
-
-.name{
-  font-size:26px;
-  font-weight:bold;
-}
-
-.route{
-  color:#666;
-  font-size:18px;
-  margin:22px 0;
-}
-
-.date{
-  font-size:20px;
-  font-weight:bold;
-  padding-bottom:15px;
-  border-bottom:1px solid #ddd;
-}
-
-.trip{
-  display:grid;
-  grid-template-columns:1fr 55px 55px 35px;
-  gap:10px;
-  align-items:center;
-  padding:18px 0;
-  border-bottom:1px solid #eee;
-}
-
-.trip:last-child{
-  border-bottom:none;
-}
-
-.trip-title{
-  font-size:22px;
-}
-
-.reason{
-  display:block;
-  color:#666;
-  font-size:14px;
-  margin-top:4px;
-}
-
-button{
-  border:0;
-  border-radius:14px;
-  height:55px;
-  font-size:25px;
-  cursor:pointer;
-}
-
-.yes{
-  background:#e0f3e5;
-  color:#168b45;
-}
-
-.no{
-  background:#f8dddd;
-  color:#d73535;
-}
-
-.status{
-  font-size:27px;
-  text-align:center;
-}
-
-.today{
-  text-align:center;
-}
-
-.today h2{
-  font-size:27px;
-}
-
-.todayText{
-  font-size:17px;
-}
-
-.amount{
-  font-size:38px;
-  font-weight:bold;
-  margin-top:16px;
-}
-
-.overview-title{
-  font-size:27px;
-  margin-bottom:22px;
-}
-
-.day-entry{
-  padding:13px 0;
-  border-bottom:1px solid #ddd;
-  line-height:1.7;
-}
-
-.day-date{
-  font-weight:bold;
-  font-size:17px;
-}
-
-.month-total{
-  font-weight:bold;
-  font-size:19px;
-  margin-top:15px;
-  padding-top:10px;
-  border-top:2px solid #333;
-}
-
-.note{
-  color:#666;
-  font-size:14px;
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,Arial,sans-serif;background:#f2f2f4;margin:0;color:#1a1a1a;padding-bottom:78px;}
+header{background:#111;color:#fff;padding:20px 16px;text-align:center;position:sticky;top:0;z-index:10;}
+header h1{margin:0;font-size:22px;}
+header p{margin:4px 0 0;color:#bbb;font-size:13px;}
+.gear{position:absolute;right:14px;top:18px;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;}
+main{max-width:640px;margin:auto;padding:14px;}
+.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);}
+h2{margin:0 0 12px;font-size:18px;}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+label{display:block;font-size:12px;font-weight:600;color:#666;margin:10px 0 4px;}
+label:first-child{margin-top:0;}
+input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1.5px solid #ddd;font-size:15px;font-family:inherit;background:#fff;}
+textarea{resize:vertical;min-height:50px;}
+button{border:0;border-radius:12px;cursor:pointer;font-family:inherit;}
+.btn{width:100%;padding:14px;font-size:15px;font-weight:700;background:#111;color:#fff;margin-top:8px;}
+.btn-out{background:#fff;color:#111;border:1.5px solid #ccc;}
+.btn-danger{background:#fff;color:#d73535;border:1.5px solid #f3caca;}
+.btn-nav{background:#eef3fb;color:#1a4a8a;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{margin-top:8px;}
+.small{padding:9px 12px;font-size:13px;width:auto;margin-top:0;}
+.name{font-size:22px;font-weight:bold;}
+.route{color:#666;font-size:15px;margin:8px 0 16px;}
+.date{font-size:17px;font-weight:bold;padding-bottom:12px;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.date input{width:auto;font-size:14px;padding:6px 8px;}
+.trip{display:grid;grid-template-columns:1fr 50px 50px 55px;gap:8px;align-items:center;padding:16px 0;border-bottom:1px solid #eee;}
+.trip:last-child{border-bottom:none;}
+.trip-title{font-size:17px;}
+.reason{display:block;color:#666;font-size:12.5px;margin-top:3px;}
+.yes,.no{height:48px;font-size:20px;}
+.yes{background:#e0f3e5;color:#168b45;}
+.no{background:#f8dddd;color:#d73535;}
+.status{font-size:20px;text-align:center;}
+.amount{font-size:32px;font-weight:bold;margin-top:8px;}
+.todayText{font-size:14px;color:#555;}
+.nav-row{display:flex;gap:8px;margin-top:12px;}
+.nav-btn{flex:1;background:#eef3fb;color:#1a4a8a;padding:14px 4px;font-size:14px;font-weight:700;text-align:center;}
+.month-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.month-tile{background:#fafafa;border:1.5px solid #e2e2e2;border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;}
+.month-tile b{display:block;font-size:13px;}
+.month-tile span{display:block;font-size:11px;color:#666;margin-top:3px;}
+.day-entry{padding:11px 0;border-bottom:1px solid #eee;font-size:13.5px;line-height:1.6;}
+.day-entry b{font-size:14.5px;}
+.total-line{font-weight:bold;font-size:16px;margin-top:10px;padding-top:10px;border-top:2px solid #333;display:flex;justify-content:space-between;}
+.list-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee;cursor:pointer;}
+.list-row:last-child{border-bottom:none;}
+.list-title{font-weight:700;font-size:14.5px;}
+.list-sub{font-size:12px;color:#777;margin-top:2px;}
+.list-amt{font-weight:700;font-size:14px;white-space:nowrap;}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #ddd;display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));max-width:640px;margin:auto;z-index:20;}
+.tab{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;color:#888;font-size:10.5px;font-weight:700;}
+.tab.active{color:#111;}
+.tab .ic{font-size:19px;}
+.pill{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;background:#eee;color:#555;}
+.pill.on{background:#e0f3e5;color:#168b45;}
+.hint{font-size:11.5px;color:#888;margin-top:4px;}
+.empty{text-align:center;color:#999;padding:30px 10px;font-size:13.5px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:100;}
+.sheet{background:#fff;border-radius:18px 18px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:640px;max-height:88vh;overflow-y:auto;position:relative;}
+.sheet .x{position:absolute;top:14px;right:14px;background:#eee;border:none;width:30px;height:30px;border-radius:50%;font-size:15px;}
+.logo-box{width:52px;height:52px;border-radius:10px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#999;flex:none;}
+.invoice-head{display:flex;gap:12px;align-items:center;margin-bottom:14px;}
+table.inv{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;}
+table.inv th{text-align:left;border-bottom:1.5px solid #333;padding:6px 4px;}
+table.inv td{padding:6px 4px;border-bottom:1px solid #eee;}
+@media print{
+  header,.tabs,.no-print{display:none!important;}
+  body{background:#fff;padding-bottom:0;}
+  main{max-width:100%;padding:0;}
+  .card{box-shadow:none;border:none;padding:0;}
 }
 </style>
 </head>
-
 <body>
 
 <header>
   <h1>A&M Taxi Services</h1>
-  <p>Schultransport</p>
+  <p id="headerSub">Schultransport &middot; Taxi</p>
+  <button class="gear no-print" onclick="openSettings()">&#9881;</button>
 </header>
 
-<main>
+<main id="app"></main>
 
-<div class="card">
-
-  <div class="name">Jon</div>
-
-  <div class="route">
-    Mettmenstetten → ISR+ Hedingen
-  </div>
-
-  <div class="date" id="today"></div>
-
-  <div class="trip">
-
-    <div class="trip-title">
-      🌅 Hinfahrt
-      <span class="reason" id="hinReason"></span>
-    </div>
-
-    <button class="yes"
-      onclick="setTrip('hin','✓')">✓</button>
-
-    <button class="no"
-      onclick="setTrip('hin','✕')">×</button>
-
-    <div class="status" id="hinStatus">–</div>
-
-  </div>
-
-  <div class="trip">
-
-    <div class="trip-title">
-      🏠 Retour
-      <span class="reason" id="retourReason"></span>
-    </div>
-
-    <button class="yes"
-      onclick="setTrip('retour','✓')">✓</button>
-
-    <button class="no"
-      onclick="setTrip('retour','✕')">×</button>
-
-    <div class="status" id="retourStatus">–</div>
-
-  </div>
-
+<div class="tabs no-print" id="tabs">
+  <button class="tab" data-tab="today" onclick="setTab('today')"><div class="ic">&#128662;</div>Heute</button>
+  <button class="tab" data-tab="billing" onclick="setTab('billing')"><div class="ic">&#128197;</div>Abrechnung</button>
+  <button class="tab" data-tab="taxi" onclick="setTab('taxi')"><div class="ic">&#128214;</div>Taxi-Buch</button>
+  <button class="tab" data-tab="customers" onclick="setTab('customers')"><div class="ic">&#128101;</div>Kunden</button>
 </div>
 
-
-<div class="card today">
-
-  <h2>Heute</h2>
-
-  <div class="todayText" id="todayText">
-    Noch keine verrechenbare Fahrt
-  </div>
-
-  <div class="amount" id="todayAmount">
-    CHF 0.–
-  </div>
-
-</div>
-
-
-<div class="card">
-
-  <h2 class="overview-title">
-    Monatsübersicht
-  </h2>
-
-  <div id="monthList">
-    Noch keine Fahrten in diesem Monat.
-  </div>
-
-  <div class="month-total" id="monthTotal">
-    Total: CHF 0.–
-  </div>
-
-</div>
-
-</main>
-
+<div id="modalRoot"></div>
 
 <script>
+/* ============ CONSTANTS ============ */
+var LOGO_SRC = ""; // paste an image URL or base64 data-URI here later to show the real logo
 
-const PRICE_HALF = 75;
-const PRICE_FULL = 150;
-
-const now = new Date();
-
-const dateKey =
-  now.getFullYear()+"-"+
-  String(now.getMonth()+1).padStart(2,"0")+"-"+
-  String(now.getDate()).padStart(2,"0");
-
-
-document.getElementById("today").innerText =
-  now.toLocaleDateString("de-CH",{
-    weekday:"long",
-    day:"2-digit",
-    month:"2-digit",
-    year:"numeric"
-  });
-
-
-function getData(){
-
-  try{
-    return JSON.parse(
-      localStorage.getItem("amSchoolTrips")
-    ) || {};
-  }
-  catch(e){
-    return {};
-  }
-
+/* ============ STORAGE ============ */
+function loadJSON(key, fallback){
+  try{ var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch(e){ return fallback; }
+}
+function saveJSON(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); return true; }
+  catch(e){ console.error('save failed', key, e); return false; }
 }
 
+var DB = {
+  children: loadJSON('am_children', null),
+  trips: loadJSON('am_trips', null),
+  customers: loadJSON('am_customers', []),
+  taxi: loadJSON('am_taxi', []),
+  invoiceSeq: loadJSON('am_invoiceSeq', {}),
+  invoices: loadJSON('am_invoices', []),
+  meta: loadJSON('am_meta', {})
+};
 
-function saveData(data){
+/* ---- one-time migration from legacy single-child amSchoolTrips ---- */
+(function migrate(){
+  var legacy = null;
+  try{ legacy = JSON.parse(localStorage.getItem('amSchoolTrips')); }catch(e){ legacy = null; }
 
-  localStorage.setItem(
-    "amSchoolTrips",
-    JSON.stringify(data)
-  );
-
-}
-
-
-function setTrip(type,value){
-
-  const data=getData();
-
-  if(!data[dateKey]){
-
-    data[dateKey]={
-      hin:"–",
-      retour:"–",
-      hinReason:"",
-      retourReason:""
-    };
-
+  if(DB.children === null){
+    DB.children = [{
+      id:'jon', name:'Jon', active:true,
+      address:'Untere Bahnhofstrasse 24, 8932 Mettmenstetten',
+      school:'ISR+', schoolAddress:'Güpfstrasse 13, 8908 Hedingen',
+      route:'Mettmenstetten \u2192 ISR+ Hedingen',
+      customerId:null, customerName:'Schulverwaltung Mettmenstetten',
+      priceHin:75, priceRetour:75, note:''
+    }];
+    saveJSON('am_children', DB.children);
   }
-
-
-  if(value==="✓"){
-
-    data[dateKey][type]="✓";
-    data[dateKey][type+"Reason"]="";
-
-  }
-
-  else{
-
-    const answer=prompt(
-      "Grund für die nicht gefahrene Strecke:\n\n"+
-      "1 = Entschuldigt (CHF 0.–)\n"+
-      "2 = Nicht entschuldigt (CHF 75.–)"
-    );
-
-
-    if(answer===null){
-      return;
-    }
-
-
-    if(answer==="1"){
-
-      data[dateKey][type]="✕";
-      data[dateKey][type+"Reason"]="Entschuldigt";
-
-    }
-
-    else if(answer==="2"){
-
-      data[dateKey][type]="✕";
-      data[dateKey][type+"Reason"]="Nicht entschuldigt";
-
-    }
-
-    else{
-
-      alert("Bitte nur 1 oder 2 eingeben.");
-      return;
-
-    }
-
-  }
-
-
-  saveData(data);
-  render();
-
-}
-
-
-function tripPrice(status,reason){
-
-  if(status==="✓"){
-    return PRICE_HALF;
-  }
-
-  if(
-    status==="✕" &&
-    reason==="Nicht entschuldigt"
-  ){
-    return PRICE_HALF;
-  }
-
-  return 0;
-
-}
-
-
-function calculateDay(d){
-
-  if(!d) return 0;
-
-  return (
-    tripPrice(d.hin,d.hinReason) +
-    tripPrice(d.retour,d.retourReason)
-  );
-
-}
-
-
-function statusText(status,reason){
-
-  if(status==="✓"){
-    return "✓";
-  }
-
-  if(status==="✕"){
-
-    if(reason==="Entschuldigt"){
-      return "✕ (Entschuldigt)";
-    }
-
-    if(reason==="Nicht entschuldigt"){
-      return "✕ (Nicht entschuldigt)";
-    }
-
-    return "✕";
-
-  }
-
-  return "–";
-
-}
-
-
-function formatDate(date){
-
-  return (
-    date.substring(8,10)+"."+
-    date.substring(5,7)+"."+
-    date.substring(0,4)
-  );
-
-}
-
-
-function render(){
-
-  const data=getData();
-
-  const todayData =
-    data[dateKey] || {
-      hin:"–",
-      retour:"–",
-      hinReason:"",
-      retourReason:""
-    };
-
-
-  document.getElementById("hinStatus").innerText =
-    todayData.hin;
-
-  document.getElementById("retourStatus").innerText =
-    todayData.retour;
-
-
-  document.getElementById("hinReason").innerText =
-    todayData.hinReason || "";
-
-  document.getElementById("retourReason").innerText =
-    todayData.retourReason || "";
-
-
-  const todayPrice =
-    calculateDay(todayData);
-
-
-  document.getElementById("todayAmount").innerText =
-    "CHF "+todayPrice+".–";
-
-
-  let text="Noch keine verrechenbare Fahrt";
-
-
-  if(todayPrice===150){
-
-    text="Hin & Retour verrechenbar";
-
-  }
-
-  else if(todayPrice===75){
-
-    text="CHF 75.– verrechenbar";
-
-  }
-
-
-  document.getElementById("todayText").innerText=text;
-
-
-
-  let html="";
-  let total=0;
-
-  const currentMonth =
-    dateKey.substring(0,7);
-
-
-  Object.keys(data)
-    .sort()
-    .forEach(date=>{
-
-      if(!date.startsWith(currentMonth)){
-        return;
-      }
-
-      const d=data[date];
-
-      const price=calculateDay(d);
-
-      total+=price;
-
-
-      html +=
-        '<div class="day-entry">'+
-
-        '<div class="day-date">'+
-        formatDate(date)+
-        '</div>'+
-
-        '<div>'+
-        'Hin '+statusText(d.hin,d.hinReason)+
-        ' · Retour '+statusText(d.retour,d.retourReason)+
-        ' — <strong>CHF '+price+'.–</strong>'+
-        '</div>'+
-
-        '</div>';
-
+  if(DB.trips === null){ DB.trips = {}; }
+
+  if(legacy && !DB.meta.migratedLegacy){
+    if(!DB.trips['jon']) DB.trips['jon'] = {};
+    Object.keys(legacy).forEach(function(date){
+      if(!DB.trips['jon'][date]) DB.trips['jon'][date] = legacy[date];
     });
-
-
-  if(!html){
-
-    html=
-      '<div class="note">'+
-      'Noch keine Fahrten in diesem Monat.'+
-      '</div>';
-
+    DB.meta.migratedLegacy = true;
+    saveJSON('am_meta', DB.meta);
+    saveJSON('am_trips', DB.trips);
+  } else if(DB.trips === null || Object.keys(DB.trips).length===0){
+    saveJSON('am_trips', DB.trips);
   }
+})();
 
-
-  document.getElementById("monthList").innerHTML=html;
-
-  document.getElementById("monthTotal").innerText=
-    "Total: CHF "+total+".–";
-
+function persistAll(){
+  saveJSON('am_children', DB.children);
+  saveJSON('am_trips', DB.trips);
+  saveJSON('am_customers', DB.customers);
+  saveJSON('am_taxi', DB.taxi);
+  saveJSON('am_invoiceSeq', DB.invoiceSeq);
+  saveJSON('am_invoices', DB.invoices);
+  saveJSON('am_meta', DB.meta);
 }
 
+/* ============ HELPERS ============ */
+function pad(n){ return String(n).padStart(2,'0'); }
+function todayKey(){ var d=new Date(); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function fmtDateDE(iso){ var p=iso.split('-'); return p[2]+"."+p[1]+"."+p[0]; }
+function monthKey(iso){ return iso.slice(0,7); }
+function monthName(m){ return ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"][m-1]; }
+function weekdayLong(iso){ var d=new Date(iso+"T00:00:00"); return d.toLocaleDateString('de-CH',{weekday:'long'}); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function uid(pref){ return pref+'-'+Date.now()+'-'+Math.floor(Math.random()*1000); }
+function mapsUrl(addr){ return 'https://maps.apple.com/?daddr=' + encodeURIComponent(addr); }
 
+function getChild(id){ return DB.children.find(function(c){ return c.id===id; }); }
+function activeChildren(){ return DB.children.filter(function(c){ return c.active!==false; }); }
+
+function tripPrice(child, status, reason, leg){
+  var price = leg==='hin' ? (child.priceHin!=null?Number(child.priceHin):75) : (child.priceRetour!=null?Number(child.priceRetour):75);
+  if(status==='\u2713') return price;
+  if(status==='\u2715' && reason==='Nicht entschuldigt') return price;
+  return 0;
+}
+function dayEntry(childId, date){
+  return (DB.trips[childId] && DB.trips[childId][date]) || {hin:'\u2013',retour:'\u2013',hinReason:'',retourReason:''};
+}
+function dayTotal(child, entry){
+  return tripPrice(child, entry.hin, entry.hinReason, 'hin') + tripPrice(child, entry.retour, entry.retourReason, 'retour');
+}
+function statusText(status, reason){
+  if(status==='\u2713') return '\u2713';
+  if(status==='\u2715'){
+    if(reason==='Entschuldigt') return '\u2715 (Entschuldigt)';
+    if(reason==='Nicht entschuldigt') return '\u2715 (Nicht entschuldigt)';
+    return '\u2715';
+  }
+  return '\u2013';
+}
+
+/* ============ STATE ============ */
+var state = {
+  tab:'today',
+  todayChildId: (activeChildren()[0]||DB.children[0]||{}).id,
+  todayDate: todayKey(),
+  billChildId: (activeChildren()[0]||DB.children[0]||{}).id,
+  billYear: new Date().getFullYear(),
+  billMonth: null,
+  taxiView:'list',
+  taxiEditId:null,
+  taxiEvalScope:'month',
+  taxiEvalDate: todayKey(),
+  taxiEvalMonth: todayKey().slice(0,7),
+  taxiEvalYear: new Date().getFullYear(),
+  custEditId:null,
+  invoiceChildId:null,
+  invoiceMonthKey:null
+};
+
+function setTab(t){ state.tab = t; render(); window.scrollTo(0,0); }
+
+/* ============ RENDER ROOT ============ */
+function render(){
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===state.tab); });
+  var el = document.getElementById('app');
+  if(state.tab==='today') el.innerHTML = renderToday();
+  else if(state.tab==='billing') el.innerHTML = renderBilling();
+  else if(state.tab==='taxi') el.innerHTML = renderTaxi();
+  else if(state.tab==='customers') el.innerHTML = renderCustomers();
+  bindToday();
+}
+
+/* ============ TAB: HEUTE ============ */
+function renderToday(){
+  var children = activeChildren();
+  if(!children.length) return '<div class="card empty">Noch kein aktives Kind erfasst. Tippe oben rechts auf &#9881; um eines hinzuzufügen.</div>';
+  if(!getChild(state.todayChildId)) state.todayChildId = children[0].id;
+  var child = getChild(state.todayChildId);
+  var date = state.todayDate;
+  var entry = dayEntry(child.id, date);
+  var total = dayTotal(child, entry);
+
+  var childSel = children.length>1 ? (
+    '<select id="todayChildSel" style="margin-bottom:12px;">' +
+    children.map(function(c){ return '<option value="'+c.id+'" '+(c.id===child.id?'selected':'')+'>'+esc(c.name)+'</option>'; }).join('') +
+    '</select>') : '';
+
+  var isToday = date===todayKey();
+  var label = isToday ? 'Heute verrechenbar' : (total>0 ? 'CHF '+total+'.\u2013 verrechenbar' : 'Noch keine verrechenbare Fahrt');
+
+  return ''+
+  '<div class="card">'+
+    childSel+
+    '<div class="name">'+esc(child.name)+'</div>'+
+    '<div class="route">'+esc(child.route||'')+'</div>'+
+    '<div class="date">'+
+      '<span>'+weekdayLong(date)+', '+fmtDateDE(date)+'</span>'+
+      '<input type="date" id="todayDateInput" value="'+date+'">'+
+    '</div>'+
+
+    '<div class="trip">'+
+      '<div class="trip-title">&#127749; Hinfahrt'+(entry.hinReason?'<span class="reason">'+esc(entry.hinReason)+'</span>':'')+'</div>'+
+      '<button class="yes" onclick="setTrip(\'hin\',\'\u2713\')">\u2713</button>'+
+      '<button class="no" onclick="setTrip(\'hin\',\'\u2715\')">\u00d7</button>'+
+      '<div class="status">'+statusIcon(entry.hin)+'</div>'+
+    '</div>'+
+    '<div class="trip">'+
+      '<div class="trip-title">&#127968; Retour'+(entry.retourReason?'<span class="reason">'+esc(entry.retourReason)+'</span>':'')+'</div>'+
+      '<button class="yes" onclick="setTrip(\'retour\',\'\u2713\')">\u2713</button>'+
+      '<button class="no" onclick="setTrip(\'retour\',\'\u2715\')">\u00d7</button>'+
+      '<div class="status">'+statusIcon(entry.retour)+'</div>'+
+    '</div>'+
+
+    '<div class="nav-row">'+
+      '<a class="nav-btn" href="'+mapsUrl(child.address)+'">&#129517; Zu '+esc(child.name)+'</a>'+
+      '<a class="nav-btn" href="'+mapsUrl(child.schoolAddress)+'">&#129517; Zur Schule</a>'+
+    '</div>'+
+  '</div>'+
+
+  '<div class="card" style="text-align:center;">'+
+    '<h2>'+(isToday?'Heute':fmtDateDE(date))+'</h2>'+
+    '<div class="todayText">'+label+'</div>'+
+    '<div class="amount">CHF '+total+'.\u2013</div>'+
+  '</div>';
+}
+
+function statusIcon(s){ return s==='\u2713' ? '\u2713' : (s==='\u2715' ? '\u2715' : '\u2013'); }
+
+function bindToday(){
+  var sel = document.getElementById('todayChildSel');
+  if(sel) sel.addEventListener('change', function(){ state.todayChildId = this.value; render(); });
+  var dIn = document.getElementById('todayDateInput');
+  if(dIn) dIn.addEventListener('change', function(){ state.todayDate = this.value || todayKey(); render(); });
+}
+
+function setTrip(leg, value){
+  var child = getChild(state.todayChildId);
+  var date = state.todayDate;
+  if(!DB.trips[child.id]) DB.trips[child.id] = {};
+  if(!DB.trips[child.id][date]) DB.trips[child.id][date] = {hin:'\u2013',retour:'\u2013',hinReason:'',retourReason:''};
+  var entry = DB.trips[child.id][date];
+
+  if(value==='\u2713'){
+    entry[leg] = '\u2713';
+    entry[leg+'Reason'] = '';
+    persistAll(); render();
+    return;
+  }
+  openReasonSheet(function(reason){
+    if(!reason) return;
+    entry[leg] = '\u2715';
+    entry[leg+'Reason'] = reason;
+    persistAll(); render();
+  });
+}
+
+function openReasonSheet(cb){
+  showModal(
+    '<h2>Grund für die nicht gefahrene Strecke</h2>'+
+    '<button class="btn" onclick="closeModal();window.__reasonCb(\'Entschuldigt\')">Entschuldigt (CHF 0.\u2013)</button>'+
+    '<button class="btn btn-out" onclick="closeModal();window.__reasonCb(\'Nicht entschuldigt\')">Nicht entschuldigt (verrechenbar)</button>'+
+    '<button class="btn btn-out" onclick="closeModal();window.__reasonCb(null)" style="margin-top:16px;">Abbrechen</button>'
+  );
+  window.__reasonCb = cb;
+}
+
+/* ============ MODAL / SHEET HELPERS ============ */
+function showModal(innerHtml){
+  document.getElementById('modalRoot').innerHTML =
+    '<div class="overlay" onclick="if(event.target===this)closeModal()">'+
+      '<div class="sheet"><button class="x" onclick="closeModal()">\u2715</button>'+innerHtml+'</div>'+
+    '</div>';
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
+
+/* ============ TAB: ABRECHNUNG ============ */
+function renderBilling(){
+  var children = DB.children;
+  if(!children.length) return '<div class="card empty">Kein Kind erfasst.</div>';
+  if(!getChild(state.billChildId)) state.billChildId = children[0].id;
+  var child = getChild(state.billChildId);
+
+  var years = collectYears(child.id);
+  if(years.indexOf(state.billYear)===-1) years.push(state.billYear);
+  years.sort();
+
+  var html = '<div class="card">'+
+    '<label>Kind</label>'+
+    '<select id="billChildSel">'+children.map(function(c){return '<option value="'+c.id+'" '+(c.id===child.id?'selected':'')+'>'+esc(c.name)+'</option>';}).join('')+'</select>'+
+    '<label>Jahr</label>'+
+    '<div class="row">'+
+      '<select id="billYearSel" style="flex:1;">'+years.map(function(y){return '<option value="'+y+'" '+(y===state.billYear?'selected':'')+'>'+y+'</option>';}).join('')+'</select>'+
+      '<button class="btn small btn-out" onclick="addBillYear()">+ Jahr</button>'+
+    '</div>'+
+  '</div>';
+
+  if(state.billMonth){
+    html += renderBillMonthDetail(child, state.billMonth);
+  } else {
+    html += renderBillYearGrid(child, state.billYear);
+  }
+  return html;
+}
+
+function collectYears(childId){
+  var set = {};
+  var t = DB.trips[childId] || {};
+  Object.keys(t).forEach(function(d){ set[d.slice(0,4)] = true; });
+  set[new Date().getFullYear()] = true;
+  return Object.keys(set).map(Number);
+}
+
+function renderBillYearGrid(child, year){
+  var tiles = '';
+  var yearTotal = 0;
+  for(var m=1;m<=12;m++){
+    var mk = year+'-'+pad(m);
+    var total = monthTotal(child.id, mk);
+    yearTotal += total;
+    tiles += '<div class="month-tile" onclick="openBillMonth(\''+mk+'\')"><b>'+monthName(m).slice(0,3)+'</b><span>CHF '+total+'.\u2013</span></div>';
+  }
+  return '<div class="card"><div class="month-grid">'+tiles+'</div>'+
+    '<div class="total-line"><span>Jahrestotal '+year+'</span><span>CHF '+yearTotal+'.\u2013</span></div></div>';
+}
+
+function monthTotal(childId, mk){
+  var child = getChild(childId);
+  var t = DB.trips[childId] || {};
+  var total = 0;
+  Object.keys(t).forEach(function(d){
+    if(d.indexOf(mk)===0) total += dayTotal(child, t[d]);
+  });
+  return total;
+}
+
+function renderBillMonthDetail(child, mk){
+  var t = DB.trips[child.id] || {};
+  var dates = Object.keys(t).filter(function(d){ return d.indexOf(mk)===0; }).sort();
+  var total = 0;
+  var rows = dates.map(function(d){
+    var e = t[d];
+    var p = dayTotal(child, e);
+    total += p;
+    return '<div class="day-entry"><b>'+fmtDateDE(d)+'</b><br>'+
+      'Hin '+statusText(e.hin,e.hinReason)+' \u00b7 Retour '+statusText(e.retour,e.retourReason)+
+      ' &mdash; <b>CHF '+p+'.\u2013</b></div>';
+  }).join('');
+  if(!rows) rows = '<div class="empty">Keine Fahrten in diesem Monat erfasst.</div>';
+  var parts = mk.split('-');
+  return '<div class="card">'+
+    '<div class="row" style="justify-content:space-between;margin-bottom:10px;">'+
+      '<h2 style="margin:0;">'+monthName(Number(parts[1]))+' '+parts[0]+'</h2>'+
+      '<button class="btn small btn-out" onclick="closeBillMonth()">\u2039 Zurück</button>'+
+    '</div>'+
+    rows+
+    '<div class="total-line"><span>Monatstotal</span><span>CHF '+total+'.\u2013</span></div>'+
+    '<button class="btn" onclick="openInvoice(\''+child.id+'\',\''+mk+'\')">Rechnung erstellen / drucken</button>'+
+  '</div>';
+}
+
+function openBillMonth(mk){ state.billMonth = mk; render(); }
+function closeBillMonth(){ state.billMonth = null; render(); }
+function addBillYear(){
+  var y = prompt('Jahr eingeben (z.B. 2028):');
+  if(!y) return;
+  y = parseInt(y,10);
+  if(!y || y<2000 || y>2100){ alert('Bitte ein gültiges Jahr eingeben.'); return; }
+  state.billYear = y; state.billMonth = null; render();
+}
+
+document.addEventListener('change', function(e){
+  if(e.target.id==='billChildSel'){ state.billChildId = e.target.value; state.billMonth=null; render(); }
+  if(e.target.id==='billYearSel'){ state.billYear = Number(e.target.value); state.billMonth=null; render(); }
+});
+
+/* ============ RECHNUNG / DRUCKANSICHT ============ */
+function nextInvoiceNumber(mk){
+  var n = (DB.invoiceSeq[mk]||0)+1;
+  DB.invoiceSeq[mk]=n;
+  persistAll();
+  return formatInvNum(mk,n);
+}
+function formatInvNum(mk,n){ return 'AM-'+mk+'-'+String(n).padStart(3,'0'); }
+
+function openInvoice(childId, mk){
+  var child = getChild(childId);
+  var t = DB.trips[childId] || {};
+  var dates = Object.keys(t).filter(function(d){ return d.indexOf(mk)===0; }).sort();
+  var total = 0;
+  var rows = dates.map(function(d){
+    var e = t[d]; var p = dayTotal(child, e); total += p;
+    return '<tr><td>'+fmtDateDE(d)+'</td><td>Hin '+statusText(e.hin,e.hinReason)+' / Retour '+statusText(e.retour,e.retourReason)+'</td><td style="text-align:right;">CHF '+p+'.\u2013</td></tr>';
+  }).join('');
+  if(!rows) rows = '<tr><td colspan="3" style="text-align:center;color:#999;">Keine Fahrten in diesem Monat.</td></tr>';
+
+  var seqCount = (DB.invoiceSeq[mk]||0)+1;
+  var invNum = formatInvNum(mk, seqCount);
+  var parts = mk.split('-');
+  var custText = child.customerName || (customerById(child.customerId)? customerLine(customerById(child.customerId)) : '');
+
+  var logoHtml = LOGO_SRC ? '<img src="'+LOGO_SRC+'" style="width:52px;height:52px;object-fit:contain;border-radius:10px;">' : '<div class="logo-box">A&amp;M</div>';
+
+  showModal(
+    '<div id="invoiceContent">'+
+    '<div class="invoice-head">'+logoHtml+'<div><b style="font-size:17px;">A&amp;M Taxi Services</b><br><span style="font-size:12px;color:#666;">Schultransport &amp; Taxi</span></div></div>'+
+    '<table class="inv"><tr><td>Rechnungsnr.</td><td style="text-align:right;">'+invNum+'</td></tr>'+
+    '<tr><td>Datum</td><td style="text-align:right;">'+fmtDateDE(todayKey())+'</td></tr>'+
+    '<tr><td>Kunde</td><td style="text-align:right;">'+esc(custText||'\u2013')+'</td></tr>'+
+    '<tr><td>Kind</td><td style="text-align:right;">'+esc(child.name)+'</td></tr>'+
+    '<tr><td>Route</td><td style="text-align:right;">'+esc(child.route||'')+'</td></tr>'+
+    '<tr><td>Monat</td><td style="text-align:right;">'+monthName(Number(parts[1]))+' '+parts[0]+'</td></tr></table>'+
+    '<table class="inv"><thead><tr><th>Datum</th><th>Fahrten</th><th style="text-align:right;">Betrag</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<div class="total-line"><span>Total</span><span>CHF '+total+'.\u2013</span></div>'+
+    '<div class="hint" style="margin-top:14px;">Zahlungsinformationen: A&amp;M Taxi Services \u00b7 IBAN/QR nach Vereinbarung</div>'+
+    '</div>'+
+    '<button class="btn no-print" onclick="finalizeInvoice(\''+childId+'\',\''+mk+'\')">Rechnungsnummer vergeben &amp; drucken/PDF</button>'+
+    '<button class="btn btn-out no-print" onclick="closeModal()">Schliessen</button>'
+  );
+}
+function customerById(id){ return DB.customers.find(function(c){return c.id===id;}); }
+function customerLine(c){ return c.name + (c.ort? (', '+c.ort):''); }
+
+function finalizeInvoice(childId, mk){
+  var num = nextInvoiceNumber(mk);
+  DB.invoices.push({number:num, childId:childId, monthKey:mk, date:todayKey()});
+  persistAll();
+  window.print();
+}
+
+/* ============ TAB: TAXI-BUCH ============ */
+function renderTaxi(){
+  if(state.taxiView==='form') return renderTaxiForm(state.taxiEditId);
+  var rides = DB.taxi.slice().sort(function(a,b){ return (b.date+b.time).localeCompare(a.date+a.time); });
+  var rows = rides.map(function(r){
+    var cust = r.customerId ? customerById(r.customerId) : null;
+    return '<div class="list-row" onclick="editTaxi(\''+r.id+'\')">'+
+      '<div><div class="list-title">'+fmtDateDE(r.date)+' '+esc(r.time||'')+'</div>'+
+      '<div class="list-sub">'+esc(r.from)+' \u2192 '+esc(r.to)+(cust?(' \u00b7 '+esc(cust.name)):'')+'</div></div>'+
+      '<div class="list-amt">CHF '+Number(r.amount||0)+'.\u2013</div></div>';
+  }).join('');
+  if(!rows) rows = '<div class="empty">Noch keine Taxifahrten erfasst.</div>';
+
+  return '<div class="card"><button class="btn" onclick="newTaxi()">+ Neue Fahrt</button></div>'+
+    '<div class="card">'+renderTaxiEval()+'</div>'+
+    '<div class="card">'+rows+'</div>';
+}
+
+function renderTaxiEval(){
+  var scope = state.taxiEvalScope;
+  var tabs = ['day','month','year'].map(function(s){
+    var lbl = s==='day'?'Tag':(s==='month'?'Monat':'Jahr');
+    return '<button class="btn small '+(scope===s?'':'btn-out')+'" style="flex:1;" onclick="setTaxiEvalScope(\''+s+'\')">'+lbl+'</button>';
+  }).join(' ');
+
+  var rides;
+  var picker = '';
+  if(scope==='day'){
+    rides = DB.taxi.filter(function(r){ return r.date===state.taxiEvalDate; });
+    picker = '<input type="date" id="taxiEvalDateInput" value="'+state.taxiEvalDate+'" style="margin-top:8px;">';
+  } else if(scope==='month'){
+    rides = DB.taxi.filter(function(r){ return r.date.indexOf(state.taxiEvalMonth)===0; });
+    picker = '<input type="month" id="taxiEvalMonthInput" value="'+state.taxiEvalMonth+'" style="margin-top:8px;">';
+  } else {
+    rides = DB.taxi.filter(function(r){ return r.date.indexOf(String(state.taxiEvalYear))===0; });
+    picker = '<input type="number" id="taxiEvalYearInput" value="'+state.taxiEvalYear+'" style="margin-top:8px;">';
+  }
+  var km = rides.reduce(function(s,r){return s+Number(r.km||0);},0);
+  var sum = rides.reduce(function(s,r){return s+Number(r.amount||0);},0);
+
+  return '<div class="btn-row">'+tabs+'</div>'+picker+
+    '<div class="total-line" style="border-top:none;padding-top:14px;"><span>Fahrten</span><span>'+rides.length+'</span></div>'+
+    '<div class="total-line" style="border-top:none;padding-top:0;"><span>Kilometer</span><span>'+km+' km</span></div>'+
+    '<div class="total-line"><span>Umsatz</span><span>CHF '+sum+'.\u2013</span></div>';
+}
+function setTaxiEvalScope(s){ state.taxiEvalScope=s; render(); }
+document.addEventListener('change', function(e){
+  if(e.target.id==='taxiEvalDateInput'){ state.taxiEvalDate=e.target.value; render(); }
+  if(e.target.id==='taxiEvalMonthInput'){ state.taxiEvalMonth=e.target.value; render(); }
+  if(e.target.id==='taxiEvalYearInput'){ state.taxiEvalYear=Number(e.target.value); render(); }
+});
+
+function newTaxi(){ state.taxiEditId=null; state.taxiView='form'; render(); }
+function editTaxi(id){ state.taxiEditId=id; state.taxiView='form'; render(); }
+
+function renderTaxiForm(id){
+  var r = id ? DB.taxi.find(function(x){return x.id===id;}) : {date:todayKey(), time:nowTime(), from:'', to:'', km:'', amount:'', payment:'Bar', customerId:'', note:''};
+  var custOptions = '<option value="">\u2013 kein Kunde \u2013</option>' + DB.customers.map(function(c){
+    return '<option value="'+c.id+'" '+(r.customerId===c.id?'selected':'')+'>'+esc(c.name)+'</option>';
+  }).join('');
+  return '<div class="card">'+
+    '<div class="row" style="justify-content:space-between;"><h2 style="margin:0;">'+(id?'Fahrt bearbeiten':'Neue Fahrt')+'</h2>'+
+    '<button class="btn small btn-out" onclick="cancelTaxiForm()">\u2039 Zurück</button></div>'+
+    '<label>Datum</label><input type="date" id="tx-date" value="'+r.date+'">'+
+    '<label>Uhrzeit</label><input type="time" id="tx-time" value="'+(r.time||'')+'">'+
+    '<label>Startadresse</label><input type="text" id="tx-from" value="'+esc(r.from)+'">'+
+    '<label>Zieladresse</label><input type="text" id="tx-to" value="'+esc(r.to)+'">'+
+    '<div class="nav-row">'+
+      '<a class="nav-btn" href="'+mapsUrl(r.from||'')+'">&#129517; Zum Start</a>'+
+      '<a class="nav-btn" href="'+mapsUrl(r.to||'')+'">&#129517; Zum Ziel</a>'+
+    '</div>'+
+    '<label>Kilometer</label><input type="number" id="tx-km" value="'+(r.km!=null?r.km:'')+'">'+
+    '<label>Betrag CHF</label><input type="number" id="tx-amount" value="'+(r.amount!=null?r.amount:'')+'">'+
+    '<label>Zahlungsart</label><select id="tx-payment">'+
+      ['Bar','Karte','Rechnung','Uber','Andere'].map(function(p){return '<option '+(r.payment===p?'selected':'')+'>'+p+'</option>';}).join('')+
+    '</select>'+
+    '<label>Kunde (optional)</label><select id="tx-customer">'+custOptions+'</select>'+
+    '<label>Bemerkung</label><textarea id="tx-note">'+esc(r.note||'')+'</textarea>'+
+    '<button class="btn" onclick="saveTaxi('+(id?"'"+id+"'":'null')+')">Speichern</button>'+
+    (id ? '<button class="btn btn-danger" onclick="deleteTaxi(\''+id+'\')">Fahrt löschen</button>' : '')+
+  '</div>';
+}
+function nowTime(){ var d=new Date(); return pad(d.getHours())+':'+pad(d.getMinutes()); }
+function cancelTaxiForm(){ state.taxiView='list'; render(); }
+
+function saveTaxi(id){
+  var data = {
+    date: document.getElementById('tx-date').value || todayKey(),
+    time: document.getElementById('tx-time').value,
+    from: document.getElementById('tx-from').value.trim(),
+    to: document.getElementById('tx-to').value.trim(),
+    km: document.getElementById('tx-km').value ? Number(document.getElementById('tx-km').value) : null,
+    amount: Number(document.getElementById('tx-amount').value) || 0,
+    payment: document.getElementById('tx-payment').value,
+    customerId: document.getElementById('tx-customer').value || null,
+    note: document.getElementById('tx-note').value.trim()
+  };
+  if(id){
+    var idx = DB.taxi.findIndex(function(x){return x.id===id;});
+    if(idx>-1) DB.taxi[idx] = Object.assign({}, DB.taxi[idx], data);
+  } else {
+    DB.taxi.push(Object.assign({id:uid('taxi')}, data));
+  }
+  persistAll();
+  state.taxiView='list'; render();
+}
+function deleteTaxi(id){
+  if(!confirm('Diese Fahrt wirklich löschen?')) return;
+  DB.taxi = DB.taxi.filter(function(x){return x.id!==id;});
+  persistAll();
+  state.taxiView='list'; render();
+}
+
+/* ============ TAB: KUNDEN ============ */
+function renderCustomers(){
+  if(state.custView==='form') return renderCustomerForm(state.custEditId);
+  var rows = DB.customers.map(function(c){
+    return '<div class="list-row" onclick="editCustomer(\''+c.id+'\')">'+
+      '<div><div class="list-title">'+esc(c.name)+'</div><div class="list-sub">'+esc(c.address||'')+(c.ort?(', '+esc(c.ort)):'')+'</div></div>'+
+      '<div class="list-amt">\u203a</div></div>';
+  }).join('');
+  if(!rows) rows = '<div class="empty">Noch keine Kunden erfasst.</div>';
+  return '<div class="card"><button class="btn" onclick="newCustomer()">+ Neuer Kunde</button></div><div class="card">'+rows+'</div>';
+}
+function newCustomer(){ state.custEditId=null; state.custView='form'; render(); }
+function editCustomer(id){ state.custEditId=id; state.custView='form'; render(); }
+function cancelCustomerForm(){ state.custView='list'; render(); }
+
+function renderCustomerForm(id){
+  var c = id ? DB.customers.find(function(x){return x.id===id;}) : {name:'',address:'',plz:'',ort:'',tel:'',email:'',note:''};
+  return '<div class="card">'+
+    '<div class="row" style="justify-content:space-between;"><h2 style="margin:0;">'+(id?'Kunde bearbeiten':'Neuer Kunde')+'</h2>'+
+    '<button class="btn small btn-out" onclick="cancelCustomerForm()">\u2039 Zurück</button></div>'+
+    '<label>Name/Firma</label><input type="text" id="cu-name" value="'+esc(c.name)+'">'+
+    '<label>Adresse</label><input type="text" id="cu-address" value="'+esc(c.address||'')+'">'+
+    '<div class="row"><div style="flex:1;"><label>PLZ</label><input type="text" id="cu-plz" value="'+esc(c.plz||'')+'"></div>'+
+    '<div style="flex:2;"><label>Ort</label><input type="text" id="cu-ort" value="'+esc(c.ort||'')+'"></div></div>'+
+    '<label>Telefon</label><input type="text" id="cu-tel" value="'+esc(c.tel||'')+'">'+
+    '<label>E-Mail</label><input type="email" id="cu-email" value="'+esc(c.email||'')+'">'+
+    '<label>Bemerkung</label><textarea id="cu-note">'+esc(c.note||'')+'</textarea>'+
+    '<button class="btn" onclick="saveCustomer('+(id?"'"+id+"'":'null')+')">Speichern</button>'+
+    (id ? '<button class="btn btn-danger" onclick="deleteCustomer(\''+id+'\')">Kunde löschen</button>' : '')+
+  '</div>';
+}
+function saveCustomer(id){
+  var data = {
+    name: document.getElementById('cu-name').value.trim(),
+    address: document.getElementById('cu-address').value.trim(),
+    plz: document.getElementById('cu-plz').value.trim(),
+    ort: document.getElementById('cu-ort').value.trim(),
+    tel: document.getElementById('cu-tel').value.trim(),
+    email: document.getElementById('cu-email').value.trim(),
+    note: document.getElementById('cu-note').value.trim()
+  };
+  if(!data.name){ alert('Bitte einen Namen eingeben.'); return; }
+  if(id){
+    var idx = DB.customers.findIndex(function(x){return x.id===id;});
+    if(idx>-1) DB.customers[idx] = Object.assign({}, DB.customers[idx], data);
+  } else {
+    DB.customers.push(Object.assign({id:uid('cust')}, data));
+  }
+  persistAll();
+  state.custView='list'; render();
+}
+function deleteCustomer(id){
+  if(!confirm('Diesen Kunden wirklich löschen?')) return;
+  DB.customers = DB.customers.filter(function(x){return x.id!==id;});
+  persistAll();
+  state.custView='list'; render();
+}
+
+/* ============ SETTINGS (Kinder + Backup) ============ */
+function openSettings(){
+  showModal(renderSettings());
+}
+function renderSettings(){
+  var rows = DB.children.map(function(c){
+    return '<div class="list-row" onclick="editChild(\''+c.id+'\')">'+
+      '<div><div class="list-title">'+esc(c.name)+' <span class="pill '+(c.active!==false?'on':'')+'">'+(c.active!==false?'aktiv':'inaktiv')+'</span></div>'+
+      '<div class="list-sub">'+esc(c.route||'')+'</div></div><div class="list-amt">\u203a</div></div>';
+  }).join('') || '<div class="empty">Keine Kinder erfasst.</div>';
+
+  return '<h2>Kinder / Aufträge</h2>'+rows+
+    '<button class="btn btn-out" onclick="closeModal();newChild();">+ Kind hinzufügen</button>'+
+    '<h2 style="margin-top:22px;">Backup</h2>'+
+    '<button class="btn" onclick="exportBackup()">Backup als JSON exportieren</button>'+
+    '<label>Backup-Datei wiederherstellen</label>'+
+    '<input type="file" id="importFile" accept="application/json">'+
+    '<button class="btn btn-out" onclick="importBackup()">Backup importieren</button>';
+}
+function newChild(){ showModal(renderChildForm(null)); }
+function editChild(id){ closeModal(); showModal(renderChildForm(id)); }
+function renderChildForm(id){
+  var c = id ? getChild(id) : {name:'',address:'',school:'',schoolAddress:'',route:'',customerName:'',priceHin:75,priceRetour:75,note:'',active:true};
+  return '<h2>'+(id?'Kind bearbeiten':'Neues Kind')+'</h2>'+
+    '<label>Name</label><input type="text" id="ch-name" value="'+esc(c.name)+'">'+
+    '<label>Wohnadresse</label><input type="text" id="ch-address" value="'+esc(c.address||'')+'">'+
+    '<label>Schule</label><input type="text" id="ch-school" value="'+esc(c.school||'')+'">'+
+    '<label>Schuladresse</label><input type="text" id="ch-schoolAddress" value="'+esc(c.schoolAddress||'')+'">'+
+    '<label>Route (Anzeige)</label><input type="text" id="ch-route" value="'+esc(c.route||'')+'">'+
+    '<label>Kunde/Auftraggeber</label><input type="text" id="ch-customerName" value="'+esc(c.customerName||'')+'">'+
+    '<div class="row"><div style="flex:1;"><label>Preis Hin CHF</label><input type="number" id="ch-priceHin" value="'+(c.priceHin!=null?c.priceHin:75)+'"></div>'+
+    '<div style="flex:1;"><label>Preis Retour CHF</label><input type="number" id="ch-priceRetour" value="'+(c.priceRetour!=null?c.priceRetour:75)+'"></div></div>'+
+    '<label>Bemerkung</label><textarea id="ch-note">'+esc(c.note||'')+'</textarea>'+
+    '<label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="ch-active" '+(c.active!==false?'checked':'')+' style="width:auto;"> Aktiv</label>'+
+    '<button class="btn" onclick="saveChild('+(id?"'"+id+"'":'null')+')">Speichern</button>'+
+    (id ? '<button class="btn btn-danger" onclick="deleteChild(\''+id+'\')">Kind löschen</button>' : '')+
+    '<button class="btn btn-out" onclick="closeModal();openSettings();">\u2039 Zurück</button>';
+}
+function saveChild(id){
+  var data = {
+    name: document.getElementById('ch-name').value.trim(),
+    address: document.getElementById('ch-address').value.trim(),
+    school: document.getElementById('ch-school').value.trim(),
+    schoolAddress: document.getElementById('ch-schoolAddress').value.trim(),
+    route: document.getElementById('ch-route').value.trim(),
+    customerName: document.getElementById('ch-customerName').value.trim(),
+    priceHin: Number(document.getElementById('ch-priceHin').value) || 0,
+    priceRetour: Number(document.getElementById('ch-priceRetour').value) || 0,
+    note: document.getElementById('ch-note').value.trim(),
+    active: document.getElementById('ch-active').checked
+  };
+  if(!data.name){ alert('Bitte einen Namen eingeben.'); return; }
+  if(id){
+    var idx = DB.children.findIndex(function(x){return x.id===id;});
+    if(idx>-1) DB.children[idx] = Object.assign({}, DB.children[idx], data);
+  } else {
+    var newId = uid('child');
+    DB.children.push(Object.assign({id:newId, customerId:null}, data));
+    if(!DB.trips[newId]) DB.trips[newId] = {};
+  }
+  persistAll();
+  closeModal(); openSettings(); render();
+}
+function deleteChild(id){
+  if(!confirm('Dieses Kind wirklich löschen? Bereits gespeicherte Fahrten bleiben zur Sicherheit erhalten, das Kind erscheint aber nicht mehr in der Auswahl.')) return;
+  DB.children = DB.children.filter(function(x){return x.id!==id;});
+  persistAll();
+  closeModal(); openSettings(); render();
+}
+
+/* ============ BACKUP ============ */
+function exportBackup(){
+  var payload = {
+    exportedAt: new Date().toISOString(),
+    am_children: DB.children, am_trips: DB.trips, am_customers: DB.customers,
+    am_taxi: DB.taxi, am_invoiceSeq: DB.invoiceSeq, am_invoices: DB.invoices, am_meta: DB.meta
+  };
+  var blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'AM_Backup_'+todayKey()+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);}, 4000);
+}
+function importBackup(){
+  var input = document.getElementById('importFile');
+  if(!input.files || !input.files[0]){ alert('Bitte zuerst eine Backup-Datei auswählen.'); return; }
+  if(!confirm('Achtung: Vorhandene Daten werden mit dem Inhalt der Backup-Datei überschrieben. Fortfahren?')) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      var data = JSON.parse(e.target.result);
+      DB.children = data.am_children || DB.children;
+      DB.trips = data.am_trips || DB.trips;
+      DB.customers = data.am_customers || DB.customers;
+      DB.taxi = data.am_taxi || DB.taxi;
+      DB.invoiceSeq = data.am_invoiceSeq || DB.invoiceSeq;
+      DB.invoices = data.am_invoices || DB.invoices;
+      DB.meta = data.am_meta || DB.meta;
+      persistAll();
+      alert('Backup wiederhergestellt.');
+      closeModal(); render();
+    }catch(err){ alert('Diese Datei konnte nicht gelesen werden.'); }
+  };
+  reader.readAsText(input.files[0]);
+}
+
+/* ============ INIT ============ */
 render();
-
 </script>
-
 </body>
 </html>
