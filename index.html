@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A&M Schultransport</title>
+
+<style>
+body{
+  font-family:Arial,sans-serif;
+  background:#f3f5f7;
+  margin:0;
+  color:#222;
+}
+header{
+  background:#111;
+  color:white;
+  padding:22px;
+  text-align:center;
+}
+header h1{margin:0;}
+header p{margin:6px 0 0;color:#ccc;}
+
+main{
+  max-width:700px;
+  margin:auto;
+  padding:18px;
+}
+.card{
+  background:white;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 2px 10px #ddd;
+}
+h2{margin-top:0;}
+
+.route{
+  color:#666;
+  margin-bottom:15px;
+}
+
+.trip{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0;
+  border-top:1px solid #eee;
+}
+
+.buttons button{
+  border:0;
+  border-radius:10px;
+  padding:11px 15px;
+  margin-left:5px;
+  font-size:18px;
+  cursor:pointer;
+}
+.yes{background:#dff5e4;}
+.no{background:#ffe0e0;}
+
+.status{
+  font-weight:bold;
+  margin-left:8px;
+}
+
+.summary{
+  text-align:center;
+}
+.amount{
+  font-size:30px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>A&M Taxi Services</h1>
+<p>Schultransport</p>
+</header>
+
+<main>
+
+<div class="card">
+<h2>Jon</h2>
+<div class="route">Mettmenstetten → ISR+ Hedingen</div>
+
+<div class="trip">
+<span>🌅 Hinfahrt</span>
+<div class="buttons">
+<button class="yes" onclick="setTrip('hin','✓')">✓</button>
+<button class="no" onclick="setTrip('hin','✕')">✕</button>
+<span id="hin" class="status">–</span>
+</div>
+</div>
+
+<div class="trip">
+<span>🏠 Retour</span>
+<div class="buttons">
+<button class="yes" onclick="setTrip('retour','✓')">✓</button>
+<button class="no" onclick="setTrip('retour','✕')">✕</button>
+<span id="retour" class="status">–</span>
+</div>
+</div>
+</div>
+
+<div class="card summary">
+<h2>Heute</h2>
+<p>Preis kompletter Schultag</p>
+<div class="amount">CHF 150.–</div>
+</div>
+
+</main>
+
+<script>
+function setTrip(type,value){
+ document.getElementById(type).innerText=value;
+ localStorage.setItem(type,value);
+}
+
+window.onload=function(){
+ document.getElementById("hin").innerText=
+ localStorage.getItem("hin") || "–";
+
+ document.getElementById("retour").innerText=
+ localStorage.getItem("retour") || "–";
+}
+</script>
+
+</body>
+</html>
