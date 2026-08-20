@@ -158,6 +158,43 @@ var DB = {
   }
 })();
 
+(function dedupeInvoices(){
+  if(DB.meta.dedupedInvoicesV1) return;
+  var seen = {};
+  var kept = [];
+  DB.invoices.slice().sort(function(a,b){
+    return a.number.localeCompare(b.number);
+  }).forEach(function(inv){
+    var key = inv.childId+'|'+inv.monthKey;
+    if(!seen[key]){
+      seen[key]=true;
+      kept.push(inv);
+    }
+  });
+
+  DB.invoices = kept;
+
+  var maxByMonth = {};
+  kept.forEach(function(inv){
+    var m = /-(\d+)$/.exec(inv.number);
+    if(m){
+      var n = parseInt(m[1],10);
+      if(!maxByMonth[inv.monthKey] || n > maxByMonth[inv.monthKey]){
+        maxByMonth[inv.monthKey] = n;
+      }
+    }
+  });
+
+  Object.keys(maxByMonth).forEach(function(mk){
+    DB.invoiceSeq[mk] = Math.max(DB.invoiceSeq[mk] || 0, maxByMonth[mk]);
+  });
+
+  DB.meta.dedupedInvoicesV1 = true;
+  saveJSON('am_invoices', DB.invoices);
+  saveJSON('am_invoiceSeq', DB.invoiceSeq);
+  saveJSON('am_meta', DB.meta);
+})();
+
 function persistAll(){
   saveJSON('am_children', DB.children);
   saveJSON('am_trips', DB.trips);
@@ -448,49 +485,149 @@ function nextInvoiceNumber(mk){
 }
 function formatInvNum(mk,n){ return 'AM-'+mk+'-'+String(n).padStart(3,'0'); }
 
-function openInvoice(childId, mk){
+function findInvoiceRecord(childId, mk){
+  return DB.invoices.find(function(i){ return i.childId===childId && i.monthKey===mk; });
+}
+
+function getInvoiceData(childId, mk){
   var child = getChild(childId);
   var t = DB.trips[childId] || {};
   var dates = Object.keys(t).filter(function(d){ return d.indexOf(mk)===0; }).sort();
   var total = 0;
-  var rows = dates.map(function(d){
+  var lines = dates.map(function(d){
     var e = t[d]; var p = dayTotal(child, e); total += p;
-    return '<tr><td>'+fmtDateDE(d)+'</td><td>Hin '+statusText(e.hin,e.hinReason)+' / Retour '+statusText(e.retour,e.retourReason)+'</td><td style="text-align:right;">CHF '+p+'.\u2013</td></tr>';
+    return { date:d, hinText: statusText(e.hin,e.hinReason), retourText: statusText(e.retour,e.retourReason), amount:p };
+  });
+  var existing = findInvoiceRecord(childId, mk);
+  var invNum = existing ? existing.number : formatInvNum(mk, (DB.invoiceSeq[mk]||0)+1);
+  return { child: child, lines: lines, total: total, invNum: invNum, assigned: !!existing, monthKey: mk };
+}
+
+function openInvoice(childId, mk){
+  var data = getInvoiceData(childId, mk);
+  var child = data.child;
+  var rows = data.lines.map(function(l){
+    return '<tr><td>'+fmtDateDE(l.date)+'</td><td>Hin '+l.hinText+' / Retour '+l.retourText+'</td><td style="text-align:right;">CHF '+l.amount+'.\u2013</td></tr>';
   }).join('');
   if(!rows) rows = '<tr><td colspan="3" style="text-align:center;color:#999;">Keine Fahrten in diesem Monat.</td></tr>';
 
-  var seqCount = (DB.invoiceSeq[mk]||0)+1;
-  var invNum = formatInvNum(mk, seqCount);
   var parts = mk.split('-');
   var custText = child.customerName || (customerById(child.customerId)? customerLine(customerById(child.customerId)) : '');
-
   var logoHtml = LOGO_SRC ? '<img src="'+LOGO_SRC+'" style="width:52px;height:52px;object-fit:contain;border-radius:10px;">' : '<div class="logo-box">A&amp;M</div>';
 
   showModal(
     '<div id="invoiceContent">'+
     '<div class="invoice-head">'+logoHtml+'<div><b style="font-size:17px;">A&amp;M Taxi Services</b><br><span style="font-size:12px;color:#666;">Schultransport &amp; Taxi</span></div></div>'+
-    '<table class="inv"><tr><td>Rechnungsnr.</td><td style="text-align:right;">'+invNum+'</td></tr>'+
+    '<table class="inv"><tr><td>Rechnungsnr.</td><td style="text-align:right;">'+data.invNum+(data.assigned?'':' (Vorschau)')+'</td></tr>'+
     '<tr><td>Datum</td><td style="text-align:right;">'+fmtDateDE(todayKey())+'</td></tr>'+
     '<tr><td>Kunde</td><td style="text-align:right;">'+esc(custText||'\u2013')+'</td></tr>'+
     '<tr><td>Kind</td><td style="text-align:right;">'+esc(child.name)+'</td></tr>'+
     '<tr><td>Route</td><td style="text-align:right;">'+esc(child.route||'')+'</td></tr>'+
     '<tr><td>Monat</td><td style="text-align:right;">'+monthName(Number(parts[1]))+' '+parts[0]+'</td></tr></table>'+
     '<table class="inv"><thead><tr><th>Datum</th><th>Fahrten</th><th style="text-align:right;">Betrag</th></tr></thead><tbody>'+rows+'</tbody></table>'+
-    '<div class="total-line"><span>Total</span><span>CHF '+total+'.\u2013</span></div>'+
+    '<div class="total-line"><span>Total</span><span>CHF '+data.total+'.\u2013</span></div>'+
     '<div class="hint" style="margin-top:14px;">Zahlungsinformationen: A&amp;M Taxi Services \u00b7 IBAN/QR nach Vereinbarung</div>'+
     '</div>'+
     '<button class="btn no-print" onclick="finalizeInvoice(\''+childId+'\',\''+mk+'\')">Rechnungsnummer vergeben &amp; drucken/PDF</button>'+
+    '<button class="btn btn-out no-print" onclick="shareInvoicePDF(\''+childId+'\',\''+mk+'\')">Als PDF teilen (Mail/WhatsApp/AirDrop)</button>'+
     '<button class="btn btn-out no-print" onclick="closeModal()">Schliessen</button>'
   );
 }
+
 function customerById(id){ return DB.customers.find(function(c){return c.id===id;}); }
 function customerLine(c){ return c.name + (c.ort? (', '+c.ort):''); }
 
-function finalizeInvoice(childId, mk){
+function ensureInvoiceNumber(childId, mk){
+  var existing = findInvoiceRecord(childId, mk);
+  if(existing) return existing.number;
   var num = nextInvoiceNumber(mk);
   DB.invoices.push({number:num, childId:childId, monthKey:mk, date:todayKey()});
   persistAll();
+  return num;
+}
+
+function finalizeInvoice(childId, mk){
+  ensureInvoiceNumber(childId, mk);
+  openInvoice(childId, mk);
   window.print();
+}
+
+function buildInvoiceJsPDF(child, mk, invNum, lines, total){
+  var doc = new window.jspdf.jsPDF({unit:'mm', format:'a4'});
+  try{ if(LOGO_SRC) doc.addImage(LOGO_SRC, 'JPEG', 15, 12, 24, 27); }catch(e){}
+  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text('A&M Taxi Services', 44, 20);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90);
+  doc.text('Schultransport & Taxi', 44, 26);
+  doc.setTextColor(20); doc.setFontSize(9.5);
+
+  var parts = mk.split('-');
+  var monthLabel = monthName(Number(parts[1]))+' '+parts[0];
+  var custText = child.customerName || (customerById(child.customerId)? customerLine(customerById(child.customerId)) : '');
+  var y = 40;
+
+  [['Rechnungsnr.', invNum], ['Datum', fmtDateDE(todayKey())], ['Kunde', custText],
+   ['Kind', child.name], ['Route', child.route||''], ['Monat', monthLabel]].forEach(function(row){
+    doc.text(row[0], 15, y);
+    doc.text(String(row[1]||'\u2013'), 195, y, {align:'right'});
+    y+=6;
+  });
+
+  y+=4;
+  doc.setFont('helvetica','bold');
+  doc.text('Datum', 15, y);
+  doc.text('Fahrten', 55, y);
+  doc.text('Betrag', 195, y, {align:'right'});
+  y+=2;
+  doc.setDrawColor(200);
+  doc.line(15,y,195,y);
+  y+=6;
+  doc.setFont('helvetica','normal');
+
+  lines.forEach(function(l){
+    if(y>270){ doc.addPage(); y=20; }
+    doc.text(fmtDateDE(l.date), 15, y);
+    doc.text('Hin '+l.hinText+' / Retour '+l.retourText, 55, y);
+    doc.text('CHF '+l.amount+'.\u2013', 195, y, {align:'right'});
+    y+=6;
+  });
+
+  y+=4;
+  doc.setDrawColor(50);
+  doc.line(15,y,195,y);
+  y+=7;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.text('Total', 15, y);
+  doc.text('CHF '+total+'.\u2013', 195, y, {align:'right'});
+  y+=10;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(120);
+  doc.text('Zahlungsinformationen: A&M Taxi Services \u00b7 IBAN/QR nach Vereinbarung', 15, y);
+
+  return doc;
+}
+
+async function shareInvoicePDF(childId, mk){
+  var num = ensureInvoiceNumber(childId, mk);
+  openInvoice(childId, mk);
+  var data = getInvoiceData(childId, mk);
+  var doc = buildInvoiceJsPDF(data.child, mk, num, data.lines, data.total);
+  var blob = doc.output('blob');
+  var filename = 'AM_Rechnung_'+data.child.name+'_'+mk+'.pdf';
+
+  if(navigator.canShare){
+    try{
+      var file = new File([blob], filename, {type:'application/pdf'});
+      if(navigator.canShare({files:[file]})){
+        await navigator.share({files:[file], title:'Rechnung '+data.child.name+' '+mk});
+        return;
+      }
+    }catch(e){}
+  }
+
+  var url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
 }
 
 /* ============ TAB: TAXI-BUCH ============ */
