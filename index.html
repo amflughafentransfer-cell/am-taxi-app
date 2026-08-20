@@ -72,11 +72,16 @@ button{border:0;border-radius:12px;cursor:pointer;font-family:inherit;}
 table.inv{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;}
 table.inv th{text-align:left;border-bottom:1.5px solid #333;padding:6px 4px;}
 table.inv td{padding:6px 4px;border-bottom:1px solid #eee;}
+@page{ margin:12mm; }
 @media print{
   header,.tabs,.no-print{display:none!important;}
   body{background:#fff;padding-bottom:0;}
   main{max-width:100%;padding:0;}
   .card{box-shadow:none;border:none;padding:0;}
+  .overlay{position:static;background:none;display:block;padding:0;}
+  .sheet{border-radius:0;box-shadow:none;padding:0;max-height:none;overflow:visible;width:100%;max-width:100%;}
+  .sheet .x{display:none!important;}
+  table.inv{page-break-inside:avoid;}
 }
 </style>
 </head>
