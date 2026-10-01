@@ -102,7 +102,9 @@ table.inv td{padding:6px 4px;border-bottom:1px solid #eee;}
 .inv-info-col.right{text-align:right;}
 .inv-kv{font-size:11.5px;color:#48566a;margin-top:3px;overflow-wrap:anywhere;word-break:break-word;}
 .inv-kv b{color:#0d2a4a;}
-.inv-tablewrap{flex:0 1 auto;overflow:hidden;min-height:0;}
+.inv-tablewrap{flex:none;overflow:visible;}
+.inv-page.inv-overflow{height:auto;overflow:visible;}
+.inv-pay-section,.inv-total-row,table.inv-trips tr{break-inside:avoid;page-break-inside:avoid;}
 table.inv-trips{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed;letter-spacing:normal;}
 table.inv-trips th:nth-child(1),table.inv-trips td:nth-child(1){width:16%;}
 table.inv-trips th:nth-child(2),table.inv-trips td:nth-child(2){width:9%;}
@@ -687,6 +689,30 @@ function resolveRecipient(child){
   return { name: child.customerName || '', street:'', plz:'', ort:'' };
 }
 
+/* Nur Anzeige: keine Änderung bestehender Kunden, Fahrten oder Rechnungs-Snapshots. */
+function invoicePaymentDays(recipient){
+  return String((recipient||{}).name||'').trim().toLowerCase()==='schulverwaltung mettmenstetten' ? 10 : null;
+}
+function invoiceDueDate(iso, days){
+  var p = iso.split('-');
+  var d = new Date(Number(p[0]), Number(p[1])-1, Number(p[2]), 12);
+  d.setDate(d.getDate()+days);
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+/* Bei widersprüchlichen Snapshots niemals Beträge ersetzen oder einen falschen QR ausgeben. */
+function checkedInvoiceTotal(model){
+  var cents = model.lines.reduce(function(sum, line){
+    var amount = Number(line.amount);
+    if(!Number.isFinite(amount)) throw new Error('Ungültiger Betrag in einer Rechnungsposition.');
+    return sum + Math.round(amount*100);
+  }, 0);
+  var total = Number(model.total);
+  if(!Number.isFinite(total) || cents!==Math.round(total*100)){
+    throw new Error('Die Summe der Rechnungspositionen stimmt nicht mit dem gespeicherten Total überein. Die Daten wurden nicht verändert.');
+  }
+  return total;
+}
+
 /* Fahrten + Total für einen Monat aus den AKTUELL gespeicherten Fahrten (nur für die Vorschau vor dem Einfrieren) */
 function buildLiveLines(child, mk){
   var t = DB.trips[child.id] || {};
@@ -748,6 +774,7 @@ function finalizeInvoiceRecord(childId, mk){
   var recipient = resolveRecipient(child);
   var parts = mk.split('-');
   var monthLabel = monthName(Number(parts[1]))+' '+parts[0];
+  checkedInvoiceTotal(built);
   var num = nextInvoiceNumber(mk);
 
   var record = {
@@ -810,6 +837,7 @@ function iconizeStatus(text){
    NIEMALS eine erfundene Referenz erzeugt - siehe renderSwissQRInto). Für die tatsächlich hinterlegte
    IBAN (normale IBAN, keine QR-IBAN) wird korrekt der Referenztyp "NON" verwendet. */
 function buildSwissQRPayload(model){
+  checkedInvoiceTotal(model);
   if(ibanIsQR(COMPANY.iban)) return null;
 
   var lines = [];
@@ -883,7 +911,8 @@ function renderSwissQRInto(containerId, model){
 
 /* ---- Einheitliches Rechnungs-HTML: dieselbe Quelle für Vorschau, Drucken UND PDF-Teilen ---- */
 function renderInvoicePageInner(model, qrId){
-  var rows = model.lines.map(function(l){
+  checkedInvoiceTotal(model);
+  var rows = model.lines.filter(function(l){ return Number(l.amount)!==0; }).map(function(l){
     return '<tr><td>'+fmtDateDE(l.date)+'</td><td>'+weekdayShort(l.date)+'</td>'+
       '<td>Hin '+iconizeStatus(l.hinText)+' / Retour '+iconizeStatus(l.retourText)+'</td>'+
       '<td class="inv-amt">CHF '+l.amount+'.\u2013</td></tr>';
@@ -893,6 +922,7 @@ function renderInvoicePageInner(model, qrId){
   var recipient = model.recipient || {name:'',street:'',plz:'',ort:''};
   var hasDebtor = !!(recipient.name && recipient.street);
   var amountStr = Number(model.total||0).toFixed(2);
+  var paymentDays = invoicePaymentDays(recipient);
 
   return ''+
   '<div class="inv-head">'+
@@ -907,8 +937,10 @@ function renderInvoicePageInner(model, qrId){
     '</div>'+
     '<div class="inv-box">'+
       '<div class="inv-label">RECHNUNG'+(model.frozen?'':'<span class="inv-preview-tag no-print">Vorschau</span>')+'</div>'+
-      '<div class="inv-meta">Rechnungsnr.<b>'+esc(model.invNum)+'</b></div>'+
+      '<div class="inv-meta">Rechnungsnr.'+(model.frozen?'':' (voraussichtlich)')+'<b>'+esc(model.invNum)+'</b></div>'+
       '<div class="inv-meta">Rechnungsdatum<b>'+fmtDateDE(model.date)+'</b></div>'+
+      (paymentDays!=null ? '<div class="inv-meta">Zahlungsfrist<b>'+paymentDays+' Tage</b></div>'+
+        '<div class="inv-meta">Zahlbar bis<b>'+fmtDateDE(invoiceDueDate(model.date,paymentDays))+'</b></div>' : '')+
     '</div>'+
   '</div>'+
   '<div class="inv-info-grid">'+
@@ -968,12 +1000,11 @@ function pickDenseClass(innerHtml){
   probe.innerHTML = '<div class="inv-page" id="denseProbe">'+innerHtml+'</div>';
   document.body.appendChild(probe);
   var page = probe.querySelector('.inv-page');
-  var maxPx = 297 * 96 / 25.4; // A4-Höhe in CSS-Pixeln (~1122.5px)
-  var chosen = 'dense-2';
+  var chosen = 'dense-2 inv-overflow';
   ['', 'dense-1', 'dense-2'].some(function(cls){
     page.className = 'inv-page' + (cls? ' '+cls:'');
-    var fits = page.scrollHeight <= maxPx;
-    chosen = cls;
+    var fits = page.scrollHeight <= page.clientHeight;
+    if(fits) chosen = cls;
     return fits;
   });
   document.body.removeChild(probe);
@@ -1107,8 +1138,27 @@ async function shareInvoicePDF(childId, mk){
     try{
       var canvas = await html2canvas(off.pageEl, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
       var doc = new window.jspdf.jsPDF({unit:'mm', format:'a4'});
-      var imgData = canvas.toDataURL('image/jpeg', 0.95);
-      doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+      // Seitenumbrüche nur zwischen Positionen/Blöcken: QR-Zahlteil bleibt vollständig.
+      var pageHeightPx = Math.round(canvas.width * 297 / 210);
+      var pageRect = off.pageEl.getBoundingClientRect();
+      var scale = canvas.width / pageRect.width;
+      var breaks = Array.prototype.map.call(off.pageEl.querySelectorAll('tbody tr, .inv-total-row, .inv-pay-section'), function(el){
+        return Math.round((el.getBoundingClientRect().top-pageRect.top) * scale);
+      });
+      for(var top=0, pageIndex=0; top<canvas.height; pageIndex++){
+        var end = Math.min(top+pageHeightPx, canvas.height);
+        if(end<canvas.height){
+          var safe = breaks.filter(function(y){ return y>top && y<=end; });
+          if(safe.length) end = Math.max.apply(null, safe);
+        }
+        if(pageIndex) doc.addPage();
+        var slice = document.createElement('canvas');
+        slice.width = canvas.width;
+        slice.height = end-top;
+        slice.getContext('2d').drawImage(canvas, 0, top, canvas.width, slice.height, 0, 0, slice.width, slice.height);
+        doc.addImage(slice.toDataURL('image/jpeg',0.95), 'JPEG', 0, 0, 210, slice.height * 210 / canvas.width);
+        top = end;
+      }
       var blob = doc.output('blob');
       var filename = 'AM_Rechnung_'+off.model.child.name+'_'+mk+'.pdf';
 
